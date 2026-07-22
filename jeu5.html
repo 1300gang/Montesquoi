@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Le Trésor Final — Super 1300</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --white:#FFFFFF;
+    --pink:#F6BACC;
+    --teal:#239DAB;
+    --cyan:#37B7C0;
+    --blue:#0D4D96;
+    --orange:#F49B2E;
+    --yellow:#FDD211;
+    --cream:#EFDAD2;
+    --magenta:#E83C6E;
+    --font-display:'Baloo 2', sans-serif;
+    --font-body:'Nunito', sans-serif;
+  }
+
+  *{box-sizing:border-box;}
+
+  html,body{
+    margin:0;
+    padding:0;
+    background:var(--cream);
+    font-family:var(--font-body);
+    color:var(--blue);
+    -webkit-tap-highlight-color:transparent;
+    min-height: 100vh;
+  }
+
+  body{
+    background-image:
+      radial-gradient(rgba(13,77,150,0.05) 1px, transparent 1px),
+      radial-gradient(rgba(13,77,150,0.04) 1px, transparent 1px);
+    background-size:24px 24px, 17px 17px;
+    background-position:0 0, 8px 8px;
+    padding: 20px 14px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .container {
+    max-width: 440px;
+    width: 100%;
+    background: var(--white);
+    border-radius: 24px;
+    padding: 30px 24px;
+    box-shadow: 0 10px 25px rgba(13,77,150,.1);
+    text-align: center;
+    position: relative;
+    border: 3px solid var(--magenta);
+  }
+
+  .title {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 26px;
+    margin: 0 0 16px;
+    color: var(--blue);
+  }
+
+  .back-btn {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--magenta);
+    text-decoration: none;
+    border: 2px solid var(--magenta);
+    border-radius: 999px;
+    padding: 4px 14px;
+    background: var(--white);
+    cursor: pointer;
+    display: inline-block;
+    margin-bottom: 20px;
+  }
+
+  .back-btn:active {
+    background: var(--magenta);
+    color: var(--white);
+  }
+
+  /* Locked state */
+  .locked-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    padding: 20px 10px;
+  }
+
+  .locked-icon {
+    font-size: 72px;
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.08); }
+  }
+
+  .lock-status {
+    font-size: 15px;
+    line-height: 1.6;
+    color: rgba(13,77,150,0.85);
+  }
+
+  .lock-progress {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 18px;
+    color: var(--magenta);
+    background: var(--cream);
+    padding: 8px 18px;
+    border-radius: 999px;
+  }
+
+  /* Unlocked state */
+  .unlocked-container {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+  }
+
+  /* Interactive Treasure Chest */
+  .chest-wrapper {
+    position: relative;
+    width: 200px;
+    height: 180px;
+    margin: 10px auto;
+    cursor: pointer;
+  }
+
+  .chest-icon {
+    font-size: 110px;
+    line-height: 1;
+    user-select: none;
+    transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+  .chest-wrapper:hover .chest-icon {
+    transform: scale(1.1) rotate(-2deg);
+  }
+  .chest-wrapper:active .chest-icon {
+    transform: scale(0.95);
+  }
+
+  .sparkles {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  .chest-hint {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--magenta);
+    animation: bounce 1.5s infinite;
+  }
+
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
+  }
+
+  /* Congrats overlay / Certificate */
+  .victory-screen {
+    display: none;
+    position: absolute;
+    inset: 0;
+    background: var(--white);
+    border-radius: 24px;
+    z-index: 10;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    overflow: hidden;
+    animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
+  }
+
+  @keyframes popIn {
+    from { transform: scale(0.8); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+
+  .certificate {
+    border: 6px double var(--orange);
+    border-radius: 16px;
+    padding: 24px 16px;
+    background: rgba(253, 210, 17, 0.04);
+    width: 100%;
+    margin-bottom: 24px;
+    position: relative;
+    box-shadow: 0 4px 15px rgba(244, 155, 46, 0.15);
+  }
+
+  .certificate-title {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 24px;
+    color: var(--orange);
+    margin: 0 0 10px;
+    text-transform: uppercase;
+  }
+
+  .certificate-text {
+    font-size: 14.5px;
+    line-height: 1.6;
+    color: var(--blue);
+  }
+
+  .certificate-badge {
+    font-size: 56px;
+    margin: 12px 0;
+    display: inline-block;
+    animation: float 3s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0) rotate(-4deg); }
+    50% { transform: translateY(-8px) rotate(4deg); }
+  }
+
+  .confetti-canvas {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 5;
+  }
+
+  .share-btn {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 16px;
+    color: var(--white);
+    background: linear-gradient(135deg, var(--orange), var(--magenta));
+    border: none;
+    border-radius: 999px;
+    padding: 12px 36px;
+    cursor: pointer;
+    box-shadow: 0 4px 0 rgba(232, 60, 110, 0.35);
+    text-decoration: none;
+    display: inline-block;
+    width: 100%;
+    margin-bottom: 12px;
+  }
+
+  .share-btn:active {
+    transform: translateY(2px);
+    box-shadow: 0 2px 0 rgba(232, 60, 110, 0.35);
+  }
+
+  .replay-btn {
+    font-family: var(--font-body);
+    font-weight: 700;
+    font-size: 13px;
+    color: rgba(13,77,150,0.5);
+    text-decoration: none;
+  }
+</style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="header">
+      <a href="hub.html" class="back-btn" id="headerBackBtn">← Hub</a>
+    </div>
+
+    <!-- 1. LOCKED STATE SCREEN -->
+    <div class="locked-container" id="lockedScreen">
+      <div class="locked-icon">🔒</div>
+      <h2 class="title">Coffre Scellé !</h2>
+      <p class="lock-status">
+        Le coffre au trésor de l'aventure <strong>Super 1300</strong> est cadenassé par 4 sceaux magiques. <br>
+        Tu dois d'abord résoudre les 4 premières énigmes du Hub pour détenir toutes les clés nécessaires !
+      </p>
+      <div class="lock-progress" id="lockProgress">0 / 4 Énigmes résolues</div>
+    </div>
+
+    <!-- 2. UNLOCKED STATE SCREEN -->
+    <div class="unlocked-container" id="unlockedScreen">
+      <h2 class="title">🏆 Le Trésor Final !</h2>
+      <p style="font-size: 14.5px; line-height: 1.5; color: rgba(13,77,150,0.85); margin: 0 0 10px;">
+        Félicitations ! Les 4 clés magiques s'alignent parfaitement. <br>
+        Touche le coffre pour l'ouvrir et libérer le trésor !
+      </p>
+
+      <div class="chest-wrapper" id="chestBtn">
+        <div class="chest-icon" id="chestIcon">📦</div>
+        <div class="sparkles">✨🌟✨</div>
+      </div>
+
+      <p class="chest-hint">Touche le coffre !</p>
+    </div>
+
+    <!-- 3. GRAND VICTORY CERTIFICATE -->
+    <div class="victory-screen" id="victoryScreen">
+      <canvas class="confetti-canvas" id="confettiCanvas"></canvas>
+
+      <div class="certificate">
+        <div class="certificate-badge">🏆</div>
+        <h3 class="certificate-title">Aventurier d'Or</h3>
+        <p class="certificate-text">
+          Certificat de réussite décerné à l'explorateur·ice hors pair qui a résolu toutes les énigmes de la quête <br>
+          <strong>Super 1300 — JDPM MADD</strong> !<br><br>
+          Le mystère est levé, le grand secret de l'aventure t'appartient à jamais. Bravo !
+        </p>
+      </div>
+
+      <button class="share-btn" id="shareBtn">Partager la Victoire ✦</button>
+      <a href="index.html" class="replay-btn" id="replayBtn">↺ Recommencer le jeu</a>
+    </div>
+
+  </div>
+
+  <script src="state_jdpm.js"></script>
+  <script>
+    const state = loadJdpmState();
+
+    const lockedScreen = document.getElementById('lockedScreen');
+    const unlockedScreen = document.getElementById('unlockedScreen');
+    const lockProgress = document.getElementById('lockProgress');
+    const chestBtn = document.getElementById('chestBtn');
+    const chestIcon = document.getElementById('chestIcon');
+    const victoryScreen = document.getElementById('victoryScreen');
+    const shareBtn = document.getElementById('shareBtn');
+    const replayBtn = document.getElementById('replayBtn');
+
+    // Count resolved games from 1 to 4
+    const resolvedCount = [1, 2, 3, 4].filter(id => state[`game_${id}_done`]).length;
+
+    if (resolvedCount < 4) {
+      // Still locked
+      lockedScreen.style.display = 'flex';
+      unlockedScreen.style.display = 'none';
+      lockProgress.textContent = `${resolvedCount} / 4 Énigmes résolues`;
+    } else {
+      // Unlocked
+      lockedScreen.style.display = 'none';
+      unlockedScreen.style.display = 'flex';
+    }
+
+    // Opening the chest action
+    chestBtn.addEventListener('click', () => {
+      chestIcon.textContent = "🔓";
+      chestIcon.style.transform = "scale(1.2)";
+
+      // Save game 5 completion
+      markJdpmGameDone(5);
+
+      setTimeout(() => {
+        victoryScreen.style.display = 'flex';
+        startConfetti();
+      }, 1000);
+    });
+
+    // Replay restarts progress
+    replayBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      if (confirm("Recommencer l'aventure de zéro ? Toute ta progression sera effacée.")) {
+        resetJdpmState();
+        window.location.href = "index.html";
+      }
+    });
+
+    // Web Share API support
+    shareBtn.addEventListener('click', async () => {
+      if (navigator.share) {
+        try {
+          await navigator.share({
+            title: 'Super 1300 — JDPM MADD',
+            text: 'J\'ai résolu toutes les énigmes de la quête Super 1300 ! Peux-tu en faire autant ?',
+            url: window.location.origin + '/index.html'
+          });
+        } catch (e) {
+          // Cancelled by user
+        }
+      } else {
+        // Fallback copy to clipboard
+        try {
+          await navigator.clipboard.writeText(window.location.origin + '/index.html');
+          alert('Lien de l\'aventure copié dans ton presse-papiers ! 🌟');
+        } catch (err) {
+          console.error(err);
+        }
+      }
+    });
+
+    // Simple Confetti effect
+    function startConfetti() {
+      const canvas = document.getElementById('confettiCanvas');
+      const ctx = canvas.getContext('2d');
+      canvas.width = canvas.parentElement.clientWidth;
+      canvas.height = canvas.parentElement.clientHeight;
+
+      const colors = ['#F6BACC', '#239DAB', '#37B7C0', '#F49B2E', '#FDD211', '#E83C6E'];
+      const particles = [];
+
+      for (let i = 0; i < 80; i++) {
+        particles.push({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height - canvas.height,
+          vx: (Math.random() - 0.5) * 4,
+          vy: 2 + Math.random() * 4,
+          size: 4 + Math.random() * 6,
+          color: colors[Math.floor(Math.random() * colors.length)]
+        });
+      }
+
+      function tick() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        particles.forEach(p => {
+          p.x += p.vx;
+          p.y += p.vy;
+          if (p.y > canvas.height) {
+            p.y = -10;
+            p.x = Math.random() * canvas.width;
+          }
+          ctx.fillStyle = p.color;
+          ctx.fillRect(p.x, p.y, p.size, p.size);
+        });
+        requestAnimationFrame(tick);
+      }
+
+      tick();
+    }
+  </script>
+
+</body>
+</html>

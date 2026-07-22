@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Masque de Fayçal — Hub</title>
+
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/",
+      "mindar-face-three": "https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-face-three.prod.js"
+    }
+  }
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Crimson+Pro:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
+
+  <style>
+    /* Hub */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --noir:    #0a0804;
+      --or:      #c9a84c;
+      --or-pale: #e8d49a;
+      --rouge:   #8b1a1a;
+      --bleu:    #1a3a5c;
+      --vert:    #1a4a2e;
+      --creme:   #f5f0e8;
+      --text:    #2a2015;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100dvh;
+      overflow: hidden;
+      background: var(--noir);
+      font-family: 'Crimson Pro', serif;
+      color: var(--creme);
+    }
+
+    /* ── FACE TRACKING CONTAINER ───────────── */
+    #ar-container {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      /* Dimensions explicites — MindAR lit ces valeurs au moment du new MindARThree()
+         Si le container est 0×0 ou mal mesuré, le canvas se positionne avec un top négatif.
+         On force la taille via les variables CSS du viewport réel. */
+      width: 100dvw;
+      height: 100dvh;
+    }
+
+    /* Forcer le canvas et la vidéo générés par MindAR à couvrir exactement le container */
+    #ar-container canvas,
+    #ar-container video {
+      position: absolute !important;
+      top: 0 !important;
+      left: 0 !important;
+      width: 100% !important;
+      height: 100% !important;
+      object-fit: cover;
+    }
+
+    /* Le div interne de MindAR (celui qui contient la scène Three.js) */
+    #ar-container > div {
+      position: absolute !important;
+      top: 0 !important;
+      left: 0 !important;
+      width: 100% !important;
+      height: 100% !important;
+      overflow: hidden;
+    }
+
+    /* ── LOADER ────────────────────────────── */
+    #loader {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      background: var(--noir);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 24px;
+      transition: opacity 0.8s ease;
+    }
+
+    #loader.fade-out {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .loader-mask {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      border: 2px solid var(--or);
+      border-top-color: transparent;
+      animation: spin 1.2s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .loader-text {
+      font-family: 'Cinzel', serif;
+      font-size: 13px;
+      letter-spacing: 0.2em;
+      color: var(--or);
+      text-transform: uppercase;
+      opacity: 0.8;
+    }
+
+    /* ── UI PAR-DESSUS LA CAMÉRA ───────────── */
+    #ui-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      pointer-events: none;
+    }
+
+    /* ── HEADER ────────────────────────────── */
+    #header {
+      padding: 20px 20px 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      pointer-events: all;
+    }
+
+    .header-title {
+      font-family: 'Cinzel', serif;
+      font-size: 11px;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--or);
+      opacity: 0.9;
+      text-shadow: 0 1px 8px rgba(0,0,0,0.8);
+    }
+
+    #btn-reset {
+      background: none;
+      border: 1px solid rgba(201, 168, 76, 0.3);
+      color: rgba(201, 168, 76, 0.5);
+      font-family: 'Cinzel', serif;
+      font-size: 9px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding: 6px 10px;
+      border-radius: 2px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    #btn-reset:active {
+      color: var(--or);
+      border-color: var(--or);
+    }
+
+    /* ── PANNEAU DES MINI-JEUX (bas) ───────── */
+    #games-panel {
+      padding: 0 16px 32px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      pointer-events: all;
+    }
+
+    /* Ligne de séparation decorative */
+    .panel-rule {
+      height: 1px;
+      background: linear-gradient(to right, transparent, rgba(201,168,76,0.4), transparent);
+      margin-bottom: 4px;
+    }
+
+    .panel-label {
+      font-family: 'Cinzel', serif;
+      font-size: 10px;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: rgba(201, 168, 76, 0.6);
+      text-align: center;
+      text-shadow: 0 1px 6px rgba(0,0,0,0.9);
+    }
+
+    /* Grille des 3 boutons */
+    .games-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    /* ── BOUTON MINI-JEU ───────────────────── */
+    .game-btn {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      padding: 14px 8px 12px;
+      border-radius: 4px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(10, 8, 4, 0.65);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      cursor: pointer;
+      text-decoration: none;
+      color: inherit;
+      transition: transform 0.15s ease, border-color 0.2s;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .game-btn:active {
+      transform: scale(0.96);
+    }
+
+    /* Pastille de couleur */
+    .game-dot {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    .game-dot::after {
+      content: '';
+      position: absolute;
+      inset: 3px;
+      border-radius: 50%;
+      background: rgba(0,0,0,0.3);
+    }
+
+    .dot-red   { background: radial-gradient(circle at 35% 35%, #e63232, #8b1a1a); }
+    .dot-blue  { background: radial-gradient(circle at 35% 35%, #3a7fd4, #1a3a5c); }
+    .dot-green { background: radial-gradient(circle at 35% 35%, #3ab06a, #1a4a2e); }
+
+    .game-name {
+      font-family: 'Cinzel', serif;
+      font-size: 9px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--creme);
+      opacity: 0.85;
+      text-align: center;
+      line-height: 1.3;
+    }
+
+    .game-hint {
+      font-size: 10px;
+      color: rgba(245, 240, 232, 0.45);
+      text-align: center;
+      line-height: 1.3;
+      font-style: italic;
+    }
+
+    /* État : complété */
+    .game-btn.done {
+      border-color: rgba(201, 168, 76, 0.35);
+    }
+
+    .game-btn.done .game-dot::before {
+      content: '✓';
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      color: #fff;
+      font-family: sans-serif;
+      line-height: 28px;
+      text-align: center;
+    }
+
+    .game-btn.done .game-name,
+    .game-btn.done .game-hint {
+      opacity: 0.45;
+    }
+
+    /* Badge doré "Fait" */
+    .done-badge {
+      display: none;
+      position: absolute;
+      top: -6px;
+      right: -6px;
+      background: var(--or);
+      color: var(--noir);
+      font-family: 'Cinzel', serif;
+      font-size: 7px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      padding: 2px 5px;
+      border-radius: 2px;
+    }
+
+    .game-btn.done .done-badge { display: block; }
+
+    /* ── BOUTON RÉVÉLATION ─────────────────── */
+    #btn-reveal {
+      display: none;
+      width: 100%;
+      padding: 16px;
+      background: linear-gradient(135deg, #c9a84c, #e8d49a, #c9a84c);
+      background-size: 200% 100%;
+      animation: shimmer 2s linear infinite;
+      color: var(--noir);
+      font-family: 'Cinzel', serif;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      text-decoration: none;
+      text-align: center;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    @keyframes shimmer {
+      0%   { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    #btn-reveal.visible { display: block; }
+
+    /* ── VIGNETTE DÉCORATIVE ───────────────── */
+    .vignette {
+      position: fixed;
+      inset: 0;
+      z-index: 5;
+      pointer-events: none;
+      background: radial-gradient(ellipse at center, transparent 40%, rgba(10,8,4,0.75) 100%);
+    }
+
+    /* ── ANIMATION ENTRÉE ──────────────────── */
+    #games-panel {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.6s ease 0.3s, transform 0.6s ease 0.3s;
+    }
+
+    #games-panel.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ── TOAST SUCCÈS ──────────────────────── */
+    #toast {
+      position: fixed;
+      top: 60px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-20px);
+      z-index: 50;
+      background: rgba(10, 8, 4, 0.9);
+      border: 1px solid var(--or);
+      color: var(--or-pale);
+      font-family: 'Cinzel', serif;
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding: 10px 20px;
+      border-radius: 2px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s, transform 0.3s;
+      white-space: nowrap;
+    }
+
+    #toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Loader -->
+  <div id="loader">
+    <div class="loader-mask"></div>
+    <p class="loader-text">Activation du masque…</p>
+  </div>
+
+  <!-- Vignette décorative -->
+  <div class="vignette"></div>
+
+  <!-- Container MindAR / Three.js -->
+  <div id="ar-container"></div>
+
+  <!-- Toast notification -->
+  <div id="toast"></div>
+
+  <!-- UI par-dessus la caméra -->
+  <div id="ui-overlay">
+
+    <!-- Header -->
+    <div id="header">
+      <span class="header-title">Masque de Fayçal</span>
+      <button id="btn-reset" onclick="confirmReset()">Réinitialiser</button>
+    </div>
+
+    <!-- Panneau bas -->
+    <div id="games-panel">
+      <div class="panel-rule"></div>
+      <p class="panel-label">Choisir un défi</p>
+
+      <div class="games-grid">
+
+        <!-- Rouge — Suika -->
+        <a href="game-red.html" class="game-btn" id="btn-red" onclick="stopAR()">
+          <span class="done-badge">Fait</span>
+          <div class="game-dot dot-red"></div>
+          <span class="game-name">Suika</span>
+          <span class="game-hint">Fais apparaître la pastèque</span>
+        </a>
+
+        <!-- Bleu — Superposition -->
+        <a href="game-blue.html" class="game-btn" id="btn-blue" onclick="stopAR()">
+          <span class="done-badge">Fait</span>
+          <div class="game-dot dot-blue"></div>
+          <span class="game-name">Loupe</span>
+          <span class="game-hint">Aligne pour lire le message</span>
+        </a>
+
+        <!-- Vert — AR Scan -->
+        <a href="game-green.html" class="game-btn" id="btn-green" onclick="stopAR()">
+          <span class="done-badge">Fait</span>
+          <div class="game-dot dot-green"></div>
+          <span class="game-name">Scanner</span>
+          <span class="game-hint">Trouve les lettres cachées</span>
+        </a>
+
+      </div>
+
+      <!-- Bouton révélation (apparaît quand tout est fait) -->
+      <a href="reveal.html" id="btn-reveal" onclick="stopAR()">✦ Révéler le visage ✦</a>
+    </div>
+
+  </div>
+
+  <!-- State global -->
+  <script src="state.js"></script>
+
+  <!-- MindAR + Three.js -->
+  <script type="module">
+    import * as THREE from 'three';
+    import { MindARThree } from 'mindar-face-three';
+
+    // ── Assets placeholder (à remplacer par les vrais PNG) ──
+    const MASK_BASE_URL  = 'assets/mask-base.png';
+    const LAYER_RED_URL  = 'assets/layer-red.png';
+    const LAYER_BLUE_URL = 'assets/layer-blue.png';
+    const LAYER_GRN_URL  = 'assets/layer-green.png';
+
+    // URLs de placeholder colorés pour le dev
+    const PLACEHOLDER = {
+      base:  'https://placehold.co/512x512/2a1a00/c9a84c?text=MASQUE',
+      red:   'https://placehold.co/512x512/8b1a1aCC/ffffff?text=ROUGE&font=playfair-display',
+      blue:  'https://placehold.co/512x512/1a3a5cCC/ffffff?text=BLEU&font=playfair-display',
+      green: 'https://placehold.co/512x512/1a4a2eCC/ffffff?text=VERT&font=playfair-display',
+    };
+
+    const state = loadState();
+
+    let mindarThree = null;
+    let faceMeshes  = [];
+
+    // ── Attendre que le viewport mobile soit stable ───────────────────────
+    // La barre d'adresse se rétracte au premier scroll → visualViewport resize.
+    // MindAR lit container.clientHeight au moment du new MindARThree() :
+    // si la hauteur n'est pas stabilisée, le canvas reçoit un top négatif.
+    function waitForStableViewport() {
+      return new Promise((resolve) => {
+        if (window.visualViewport) {
+          let done = false;
+          const finish = () => {
+            if (done) return;
+            done = true;
+            window.visualViewport.removeEventListener('resize', finish);
+            requestAnimationFrame(() => requestAnimationFrame(resolve));
+          };
+          window.visualViewport.addEventListener('resize', finish);
+          setTimeout(() => { if (!done) { done = true; resolve(); } }, 350);
+        } else {
+          setTimeout(resolve, 150);
+        }
+      });
+    }
+
+    // ── Verrouiller la taille du container sur le viewport réel ──────────
+    function lockContainerSize() {
+      const c  = document.querySelector('#ar-container');
+      const vv = window.visualViewport;
+      const w  = vv ? Math.round(vv.width)  : window.innerWidth;
+      const h  = vv ? Math.round(vv.height) : window.innerHeight;
+      c.style.width  = w + 'px';
+      c.style.height = h + 'px';
+      c.style.top    = '0px';
+      c.style.left   = '0px';
+    }
+
+    // ── Forcer MindAR à recalculer son layout après start() ──────────────
+    function recalibrateAR() {
+      requestAnimationFrame(() => {
+        // Reset le top/left injecté par MindAR sur ses éléments enfants
+        const container = document.querySelector('#ar-container');
+        container.querySelectorAll('canvas, video, div').forEach(el => {
+          if (el.style.top && el.style.top !== '0px') {
+            el.style.top  = '0px';
+          }
+        });
+        window.dispatchEvent(new Event('resize'));
+      });
+    }
+
+    async function initAR() {
+      // Étape 1 : attendre viewport stable
+      await waitForStableViewport();
+
+      // Étape 2 : fixer la taille du container avant que MindAR la lise
+      lockContainerSize();
+
+      // Étape 3 : init MindAR
+      mindarThree = new MindARThree({
+        container: document.querySelector('#ar-container'),
+      });
+
+      const { renderer, scene, camera } = mindarThree;
+      const light = new THREE.HemisphereLight(0xffffff, 0xbbbbff, 1);
+      scene.add(light);
+
+      const loader = new THREE.TextureLoader();
+
+      // Charger une texture et créer un faceMesh
+      async function addLayer(url, fallbackUrl) {
+        return new Promise((resolve) => {
+          loader.load(
+            url,
+            (tex) => {
+              tex.encoding = THREE.sRGBEncoding;
+              const mesh = mindarThree.addFaceMesh();
+              mesh.material = new THREE.MeshBasicMaterial({
+                map: tex,
+                transparent: true,
+                side: THREE.DoubleSide,
+                alphaTest: 0.05,
+              });
+              scene.add(mesh);
+              resolve(mesh);
+            },
+            undefined,
+            () => {
+              // Fallback sur placeholder
+              loader.load(fallbackUrl, (tex) => {
+                tex.encoding = THREE.sRGBEncoding;
+                const mesh = mindarThree.addFaceMesh();
+                mesh.material = new THREE.MeshBasicMaterial({
+                  map: tex,
+                  transparent: true,
+                  side: THREE.DoubleSide,
+                  alphaTest: 0.05,
+                  opacity: 0.6,
+                });
+                scene.add(mesh);
+                resolve(mesh);
+              });
+            }
+          );
+        });
+      }
+
+      // Couche de base (masque)
+      const meshBase = await addLayer(MASK_BASE_URL, PLACEHOLDER.base);
+      faceMeshes.push({ mesh: meshBase, key: null }); // toujours visible
+
+      // Couche rouge
+      if (!state.layer_red_done) {
+        const meshRed = await addLayer(LAYER_RED_URL, PLACEHOLDER.red);
+        faceMeshes.push({ mesh: meshRed, key: 'layer_red_done' });
+      }
+
+      // Couche bleue
+      if (!state.layer_blue_done) {
+        const meshBlue = await addLayer(LAYER_BLUE_URL, PLACEHOLDER.blue);
+        faceMeshes.push({ mesh: meshBlue, key: 'layer_blue_done' });
+      }
+
+      // Couche verte
+      if (!state.layer_green_done) {
+        const meshGreen = await addLayer(LAYER_GRN_URL, PLACEHOLDER.green);
+        faceMeshes.push({ mesh: meshGreen, key: 'layer_green_done' });
+      }
+
+      // Démarrage
+      await mindarThree.start();
+
+      // Étape 4 : recalibrer le layout après start()
+      // MindAR repositionne ses éléments juste avant/après start() —
+      // on corrige le top négatif éventuel avec un léger délai
+      recalibrateAR();
+      setTimeout(recalibrateAR, 200); // second passage de sécurité
+
+      // Masquer le loader
+      const loaderEl = document.getElementById('loader');
+      loaderEl.classList.add('fade-out');
+      setTimeout(() => loaderEl.remove(), 900);
+
+      // Afficher le panneau
+      document.getElementById('games-panel').classList.add('visible');
+
+      renderer.setAnimationLoop(() => {
+        renderer.render(scene, camera);
+      });
+
+      console.log('✅ Hub AR démarré');
+    }
+
+    // Exposer stopAR globalement
+    window.stopAR = function () {
+      try {
+        if (mindarThree) {
+          mindarThree.stop();
+          mindarThree.renderer.setAnimationLoop(null);
+        }
+      } catch (e) {
+        console.warn('stopAR:', e);
+      }
+    };
+
+    initAR().catch((err) => {
+      console.error('❌ Erreur AR:', err);
+      document.getElementById('loader').remove();
+      document.getElementById('games-panel').classList.add('visible');
+    });
+  </script>
+
+  <!-- UI logic (vanilla, hors module) -->
+  <script>
+    // ── Lire l'état et mettre à jour l'UI ──
+    function refreshUI() {
+      const state = loadState();
+
+      if (state.layer_red_done)   document.getElementById('btn-red').classList.add('done');
+      if (state.layer_blue_done)  document.getElementById('btn-blue').classList.add('done');
+      if (state.layer_green_done) document.getElementById('btn-green').classList.add('done');
+
+      if (isAllDone()) {
+        document.getElementById('btn-reveal').classList.add('visible');
+        document.querySelector('.panel-label').textContent = '✦ Le masque peut être levé ✦';
+      }
+    }
+
+    // ── Toast ────────────────────────────
+    function showToast(msg, duration = 2500) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), duration);
+    }
+
+    // ── Reset ────────────────────────────
+    function confirmReset() {
+      if (confirm('Remettre toute la progression à zéro ?')) {
+        stopAR();
+        resetState();
+        window.location.href = 'index.html';
+      }
+    }
+
+    // ── Vérifier si on revient d'un mini-jeu victorieux ──
+    // Paramètre URL: ?win=red|blue|green
+    function checkWinParam() {
+      const params = new URLSearchParams(window.location.search);
+      const win = params.get('win');
+      if (win) {
+        markLayerDone(win);
+        const labels = { red: 'rouge', blue: 'bleue', green: 'verte' };
+        showToast(`✦ Couche ${labels[win] || win} révélée`);
+        // Nettoyer l'URL sans recharger
+        history.replaceState(null, '', window.location.pathname);
+      }
+    }
+
+    // ── Init ─────────────────────────────
+    refreshUI();
+    checkWinParam();
+  </script>
+
+</body>
+</html>

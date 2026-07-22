@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Énigme 4 — Le Portrait Mystère</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --white:#FFFFFF;
+    --pink:#F6BACC;
+    --teal:#239DAB;
+    --cyan:#37B7C0;
+    --blue:#0D4D96;
+    --orange:#F49B2E;
+    --yellow:#FDD211;
+    --cream:#EFDAD2;
+    --magenta:#E83C6E;
+    --font-display:'Baloo 2', sans-serif;
+    --font-body:'Nunito', sans-serif;
+  }
+
+  *{box-sizing:border-box;}
+
+  html,body{
+    margin:0;
+    padding:0;
+    background:var(--cream);
+    font-family:var(--font-body);
+    color:var(--blue);
+    -webkit-tap-highlight-color:transparent;
+    min-height: 100vh;
+  }
+
+  body{
+    background-image:
+      radial-gradient(rgba(13,77,150,0.05) 1px, transparent 1px),
+      radial-gradient(rgba(13,77,150,0.04) 1px, transparent 1px);
+    background-size:24px 24px, 17px 17px;
+    background-position:0 0, 8px 8px;
+    padding: 20px 14px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .container {
+    max-width: 440px;
+    width: 100%;
+    background: var(--white);
+    border-radius: 24px;
+    padding: 24px 20px;
+    box-shadow: 0 10px 25px rgba(13,77,150,.1);
+    text-align: center;
+    position: relative;
+    border: 3px solid var(--blue);
+  }
+
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+
+  .back-btn {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--blue);
+    text-decoration: none;
+    border: 2px solid var(--blue);
+    border-radius: 999px;
+    padding: 4px 14px;
+    background: var(--white);
+    cursor: pointer;
+  }
+
+  .back-btn:active {
+    background: var(--blue);
+    color: var(--white);
+  }
+
+  .title {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 22px;
+    margin: 0;
+    color: var(--blue);
+  }
+
+  .clue-box {
+    background: rgba(13, 77, 150, 0.06);
+    border: 2px dashed var(--blue);
+    border-radius: 16px;
+    padding: 14px;
+    margin-bottom: 20px;
+    font-size: 14px;
+    line-height: 1.5;
+    text-align: left;
+  }
+
+  .clue-box h3 {
+    margin: 0 0 6px 0;
+    font-family: var(--font-display);
+    color: var(--blue);
+  }
+
+  /* Scratch Card container */
+  .scratch-container {
+    position: relative;
+    width: 260px;
+    height: 260px;
+    margin: 20px auto;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 6px 16px rgba(13,77,150,0.18);
+    background: #eaeef3;
+    border: 4px solid var(--blue);
+  }
+
+  .portrait-bg {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--cream);
+    background-image: radial-gradient(var(--white) 30%, transparent 70%);
+  }
+
+  .portrait-svg {
+    width: 140px;
+    height: 140px;
+  }
+
+  .portrait-name {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 16px;
+    color: var(--blue);
+    margin-top: 8px;
+    letter-spacing: 0.1em;
+  }
+
+  .scratch-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    cursor: crosshair;
+    touch-action: none;
+    z-index: 2;
+  }
+
+  /* Input fields */
+  .input-row {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin: 20px 0 10px;
+  }
+
+  .input-field {
+    width: 100%;
+    padding: 12px 18px;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 18px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    border: 3px solid var(--cream);
+    border-radius: 999px;
+    outline: none;
+    text-align: center;
+    color: var(--blue);
+    transition: border-color 0.2s;
+  }
+  .input-field:focus {
+    border-color: var(--blue);
+  }
+
+  .validate-btn {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 16px;
+    color: var(--white);
+    background: var(--blue);
+    border: none;
+    border-radius: 999px;
+    padding: 12px 32px;
+    cursor: pointer;
+    box-shadow: 0 4px 0 rgba(13, 77, 150, 0.35);
+    width: 100%;
+  }
+
+  .validate-btn:active {
+    transform: translateY(2px);
+    box-shadow: 0 2px 0 rgba(13, 77, 150, 0.35);
+  }
+
+  .feedback {
+    min-height: 20px;
+    font-size: 13px;
+    font-weight: 700;
+    margin-top: 8px;
+    color: var(--magenta);
+  }
+
+  .success-overlay {
+    display: none;
+    position: absolute;
+    inset: 0;
+    background: var(--white);
+    border-radius: 24px;
+    z-index: 10;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    animation: scaleUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
+  }
+
+  @keyframes scaleUp {
+    from { transform: scale(0.9); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+
+  .success-emoji {
+    font-size: 64px;
+    margin-bottom: 12px;
+  }
+
+  .success-title {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 26px;
+    color: var(--blue);
+    margin-bottom: 10px;
+  }
+
+  .success-text {
+    font-size: 15px;
+    line-height: 1.6;
+    margin-bottom: 24px;
+  }
+
+  .success-btn {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 16px;
+    color: var(--white);
+    background: var(--blue);
+    border: none;
+    border-radius: 999px;
+    padding: 12px 40px;
+    cursor: pointer;
+    text-decoration: none;
+    box-shadow: 0 4px 0 rgba(13, 77, 150, 0.35);
+  }
+</style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="header">
+      <a href="hub.html" class="back-btn">← Hub</a>
+      <h2 class="title">Énigme 4</h2>
+      <div style="width: 50px;"></div>
+    </div>
+
+    <div class="clue-box">
+      <h3>🖼️ Le Portrait Mystère</h3>
+      Gratte la couche d'argile dorée ci-dessous avec ton doigt ou ta souris pour révéler l'identité du personnage historique caché. <br>
+      Saisis ensuite son nom de famille pour obtenir la quatrième clé !
+    </div>
+
+    <div class="scratch-container">
+      <div class="portrait-bg">
+        <!-- SVG stylized representation of Charles de Secondat, Baron de Montesquieu -->
+        <svg class="portrait-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+          <!-- Back circle -->
+          <circle cx="50" cy="50" r="42" fill="var(--pink)" opacity="0.6"/>
+          <!-- Shoulders & Coat -->
+          <path d="M22,82 C25,65 35,55 50,55 C65,55 75,65 78,82" fill="var(--blue)"/>
+          <path d="M50,55 L40,82 L60,82 Z" fill="var(--cream)"/>
+          <!-- Head / Face silhouette side profile (standard antique profile of Montesquieu) -->
+          <path d="M43,58 C38,55 36,46 38,40 C39,36 43,35 45,35 C48,31 52,28 58,30 C64,32 66,38 65,44 C64,48 61,54 55,56 C50,57 46,59 43,58 Z" fill="#fbd3b6"/>
+          <!-- Nose prominent profile -->
+          <path d="M38,40 L33,43 L37,45 Z" fill="#fbd3b6"/>
+          <!-- Hair (wig, typical of 18th century) -->
+          <path d="M54,27 C50,27 46,31 46,36 C46,39 50,42 54,42 C58,42 61,38 61,35 C61,30 58,27 54,27 Z" fill="#e2e8f0"/>
+          <path d="M60,33 C58,33 55,36 55,39 C55,41 58,44 61,44 C64,44 66,41 66,38 C66,35 63,33 60,33 Z" fill="#e2e8f0"/>
+          <path d="M53,40 C51,40 48,43 48,46 C48,48 51,51 54,51 C57,51 59,48 59,45 C59,42 56,40 53,40 Z" fill="#e2e8f0"/>
+          <circle cx="48" cy="46" r="3" fill="#e2e8f0"/>
+          <!-- Laurels / Ribbon -->
+          <path d="M62,48 L65,54 L60,56 Z" fill="var(--orange)"/>
+        </svg>
+        <div class="portrait-name">MONTESQUIEU</div>
+      </div>
+      <canvas class="scratch-canvas" id="scratchCanvas"></canvas>
+    </div>
+
+    <div class="input-row">
+      <input type="text" class="input-field" id="secretInput" placeholder="Nom du personnage caché..." autocomplete="off" spellcheck="false">
+      <div class="feedback" id="feedbackMsg"></div>
+      <button class="validate-btn" id="validateBtn">Valider l'identité</button>
+    </div>
+
+    <!-- Success Overlay -->
+    <div class="success-overlay" id="successOverlay">
+      <div class="success-emoji">🖼️</div>
+      <h2 class="success-title">Énigme Résolue !</h2>
+      <p class="success-text">
+        Parfait ! Tu as reconnu le portrait de l'illustre philosophe :<br>
+        <strong>MONTESQUIEU</strong>.<br>
+        La quatrième clé du coffre est à toi.
+      </p>
+      <a href="hub.html?win=4" class="success-btn">Retour au Hub</a>
+    </div>
+  </div>
+
+  <script src="state_jdpm.js"></script>
+  <script>
+    const canvas = document.getElementById('scratchCanvas');
+    const ctx = canvas.getContext('2d');
+    let isDrawing = false;
+
+    // Set canvas dimensions
+    canvas.width = 252;
+    canvas.height = 252;
+
+    // Fill with scratching cover layer (clay gold pattern)
+    ctx.fillStyle = '#D4AF37'; // Gold
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // Draw scratch text on top
+    ctx.fillStyle = '#FFFFFF';
+    ctx.font = 'bold 18px "Nunito", sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('GRATTEZ ICI', canvas.width / 2, canvas.height / 2);
+    ctx.font = '12px "Nunito", sans-serif';
+    ctx.fillText('avec votre doigt ou souris', canvas.width / 2, canvas.height / 2 + 25);
+
+    // Touch / Mouse actions
+    function scratch(e) {
+      if (!isDrawing) return;
+
+      const rect = canvas.getBoundingClientRect();
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+
+      const x = clientX - rect.left;
+      const y = clientY - rect.top;
+
+      ctx.globalCompositeOperation = 'destination-out';
+      ctx.beginPath();
+      ctx.arc(x, y, 24, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    canvas.addEventListener('mousedown', (e) => { isDrawing = true; scratch(e); });
+    window.addEventListener('mousemove', scratch);
+    window.addEventListener('mouseup', () => { isDrawing = false; });
+
+    canvas.addEventListener('touchstart', (e) => { isDrawing = true; scratch(e); }, { passive: false });
+    window.addEventListener('touchmove', scratch, { passive: false });
+    window.addEventListener('touchend', () => { isDrawing = false; });
+
+    // Validation
+    const secretInput = document.getElementById('secretInput');
+    const validateBtn = document.getElementById('validateBtn');
+    const feedbackMsg = document.getElementById('feedbackMsg');
+    const successOverlay = document.getElementById('successOverlay');
+
+    validateBtn.addEventListener('click', () => {
+      const val = secretInput.value.trim().toUpperCase();
+      // Accepts Montesquieu
+      if (val === 'MONTESQUIEU') {
+        markJdpmGameDone(4);
+        successOverlay.style.display = 'flex';
+      } else {
+        feedbackMsg.textContent = "Ce n'est pas le bon personnage... Gratte un peu plus !";
+        secretInput.style.borderColor = 'var(--magenta)';
+        setTimeout(() => {
+          feedbackMsg.textContent = "";
+          secretInput.style.borderColor = 'var(--cream)';
+        }, 3000);
+      }
+    });
+
+    secretInput.addEventListener('keydown', e => {
+      if (e.key === 'Enter') validateBtn.click();
+    });
+  </script>
+
+</body>
+</html>
