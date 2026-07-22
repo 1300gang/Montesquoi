@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Énigme 3 — Le Code Oublié</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --white:#FFFFFF;
+    --pink:#F6BACC;
+    --teal:#239DAB;
+    --cyan:#37B7C0;
+    --blue:#0D4D96;
+    --orange:#F49B2E;
+    --yellow:#FDD211;
+    --cream:#EFDAD2;
+    --magenta:#E83C6E;
+    --font-display:'Baloo 2', sans-serif;
+    --font-body:'Nunito', sans-serif;
+  }
+
+  *{box-sizing:border-box;}
+
+  html,body{
+    margin:0;
+    padding:0;
+    background:var(--cream);
+    font-family:var(--font-body);
+    color:var(--blue);
+    -webkit-tap-highlight-color:transparent;
+    min-height: 100vh;
+  }
+
+  body{
+    background-image:
+      radial-gradient(rgba(13,77,150,0.05) 1px, transparent 1px),
+      radial-gradient(rgba(13,77,150,0.04) 1px, transparent 1px);
+    background-size:24px 24px, 17px 17px;
+    background-position:0 0, 8px 8px;
+    padding: 20px 14px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .container {
+    max-width: 440px;
+    width: 100%;
+    background: var(--white);
+    border-radius: 24px;
+    padding: 24px 20px;
+    box-shadow: 0 10px 25px rgba(13,77,150,.1);
+    text-align: center;
+    position: relative;
+    border: 3px solid var(--orange);
+  }
+
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+
+  .back-btn {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--orange);
+    text-decoration: none;
+    border: 2px solid var(--orange);
+    border-radius: 999px;
+    padding: 4px 14px;
+    background: var(--white);
+    cursor: pointer;
+  }
+
+  .back-btn:active {
+    background: var(--orange);
+    color: var(--white);
+  }
+
+  .title {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 22px;
+    margin: 0;
+    color: var(--blue);
+  }
+
+  .clue-box {
+    background: rgba(244, 155, 46, 0.08);
+    border: 2px dashed var(--orange);
+    border-radius: 16px;
+    padding: 14px;
+    margin-bottom: 25px;
+    font-size: 14px;
+    line-height: 1.5;
+    text-align: left;
+  }
+
+  .clue-box h3 {
+    margin: 0 0 6px 0;
+    font-family: var(--font-display);
+    color: var(--orange);
+  }
+
+  /* Combination lock lockbox */
+  .safe-box {
+    background: #eaeef3;
+    border: 5px solid var(--blue);
+    border-radius: 20px;
+    padding: 24px 16px;
+    margin: 20px auto;
+    max-width: 320px;
+    box-shadow: 0 8px 20px rgba(13,77,150,0.25);
+  }
+
+  .safe-screen {
+    background: #2b303c;
+    color: var(--yellow);
+    font-family: monospace;
+    font-size: 20px;
+    padding: 10px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    letter-spacing: 0.1em;
+    border: 3px solid #1a1e26;
+  }
+
+  .lock-wheels {
+    display: flex;
+    justify-content: space-around;
+    gap: 8px;
+    margin-bottom: 24px;
+  }
+
+  .wheel-column {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .wheel-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: var(--white);
+    border: 2.5px solid var(--orange);
+    color: var(--orange);
+    font-size: 20px;
+    font-weight: 800;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 3px 0 rgba(244, 155, 46, 0.3);
+  }
+
+  .wheel-btn:active {
+    transform: translateY(1px);
+    box-shadow: 0 1px 0 rgba(244, 155, 46, 0.3);
+  }
+
+  .wheel-val {
+    width: 50px;
+    height: 64px;
+    background: var(--white);
+    border: 3px solid var(--blue);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 28px;
+    color: var(--blue);
+    box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);
+  }
+
+  .open-btn {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 18px;
+    color: var(--white);
+    background: var(--orange);
+    border: none;
+    border-radius: 999px;
+    padding: 12px 36px;
+    cursor: pointer;
+    box-shadow: 0 4px 0 rgba(244, 155, 46, 0.35);
+    width: 100%;
+  }
+
+  .open-btn:active {
+    transform: translateY(2px);
+    box-shadow: 0 2px 0 rgba(244, 155, 46, 0.35);
+  }
+
+  .feedback {
+    min-height: 20px;
+    font-size: 13px;
+    font-weight: 700;
+    margin-top: 12px;
+    color: var(--magenta);
+  }
+
+  .success-overlay {
+    display: none;
+    position: absolute;
+    inset: 0;
+    background: var(--white);
+    border-radius: 24px;
+    z-index: 10;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    animation: scaleUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
+  }
+
+  @keyframes scaleUp {
+    from { transform: scale(0.9); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+
+  .success-emoji {
+    font-size: 64px;
+    margin-bottom: 12px;
+  }
+
+  .success-title {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 26px;
+    color: var(--orange);
+    margin-bottom: 10px;
+  }
+
+  .success-text {
+    font-size: 15px;
+    line-height: 1.6;
+    margin-bottom: 24px;
+  }
+
+  .success-btn {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 16px;
+    color: var(--white);
+    background: var(--orange);
+    border: none;
+    border-radius: 999px;
+    padding: 12px 40px;
+    cursor: pointer;
+    text-decoration: none;
+    box-shadow: 0 4px 0 rgba(244, 155, 46, 0.35);
+  }
+</style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="header">
+      <a href="hub.html" class="back-btn">← Hub</a>
+      <h2 class="title">Énigme 3</h2>
+      <div style="width: 50px;"></div>
+    </div>
+
+    <div class="clue-box">
+      <h3>🔍 Le Code Oublié</h3>
+      Un coffre-fort scelle un indice précieux. Pour trouver la combinaison de 4 chiffres, cherche bien sur la <strong>page d'accueil ou l'en-tête du Hub</strong>...<br>
+      Quel est ce grand nombre magique qui revient sans cesse ?
+    </div>
+
+    <div class="safe-box">
+      <div class="safe-screen" id="safeScreen">🔒 COFFRE FERMÉ</div>
+
+      <div class="lock-wheels">
+        <!-- Digit 1 -->
+        <div class="wheel-column">
+          <button class="wheel-btn" onclick="changeDigit(0, 1)">▲</button>
+          <div class="wheel-val" id="digit-0">0</div>
+          <button class="wheel-btn" onclick="changeDigit(0, -1)">▼</button>
+        </div>
+        <!-- Digit 2 -->
+        <div class="wheel-column">
+          <button class="wheel-btn" onclick="changeDigit(1, 1)">▲</button>
+          <div class="wheel-val" id="digit-1">0</div>
+          <button class="wheel-btn" onclick="changeDigit(1, -1)">▼</button>
+        </div>
+        <!-- Digit 3 -->
+        <div class="wheel-column">
+          <button class="wheel-btn" onclick="changeDigit(2, 1)">▲</button>
+          <div class="wheel-val" id="digit-2">0</div>
+          <button class="wheel-btn" onclick="changeDigit(2, -1)">▼</button>
+        </div>
+        <!-- Digit 4 -->
+        <div class="wheel-column">
+          <button class="wheel-btn" onclick="changeDigit(3, 1)">▲</button>
+          <div class="wheel-val" id="digit-3">0</div>
+          <button class="wheel-btn" onclick="changeDigit(3, -1)">▼</button>
+        </div>
+      </div>
+
+      <button class="open-btn" id="openBtn">Ouvrir le coffre-fort</button>
+    </div>
+
+    <div class="feedback" id="feedbackMsg"></div>
+
+    <!-- Success Overlay -->
+    <div class="success-overlay" id="successOverlay">
+      <div class="success-emoji">🔓</div>
+      <h2 class="success-title">Combinaison Correcte !</h2>
+      <p class="success-text">
+        Clic ! Le coffre s'ouvre et révèle le nombre d'or déchiffré :<br>
+        <strong>1300</strong>.<br>
+        La troisième clé du coffre est à toi.
+      </p>
+      <a href="hub.html?win=3" class="success-btn">Retour au Hub</a>
+    </div>
+  </div>
+
+  <script src="state_jdpm.js"></script>
+  <script>
+    // Correct Combination is 1300 (from Super 1300)
+    const digits = [0, 0, 0, 0];
+    const targetCode = [1, 3, 0, 0];
+
+    const safeScreen = document.getElementById('safeScreen');
+    const feedbackMsg = document.getElementById('feedbackMsg');
+    const successOverlay = document.getElementById('successOverlay');
+
+    function changeDigit(index, delta) {
+      digits[index] = (digits[index] + delta + 10) % 10;
+      document.getElementById(`digit-${index}`).textContent = digits[index];
+    }
+
+    document.getElementById('openBtn').addEventListener('click', () => {
+      const isCorrect = digits.every((val, i) => val === targetCode[i]);
+
+      if (isCorrect) {
+        safeScreen.textContent = "🔓 ACCÈS AUTORISÉ";
+        safeScreen.style.color = "#27ae60";
+        setTimeout(() => {
+          markJdpmGameDone(3);
+          successOverlay.style.display = 'flex';
+        }, 800);
+      } else {
+        safeScreen.textContent = "❌ CODE INCORRECT";
+        safeScreen.style.color = "var(--magenta)";
+        feedbackMsg.textContent = "Le signal sonore indique une erreur. Réessaie !";
+
+        // Flash feedback
+        setTimeout(() => {
+          safeScreen.textContent = "🔒 COFFRE FERMÉ";
+          safeScreen.style.color = "var(--yellow)";
+          feedbackMsg.textContent = "";
+        }, 2000);
+      }
+    });
+  </script>
+
+</body>
+</html>

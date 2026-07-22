@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Énigme 2 — La Piste Secrète</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --white:#FFFFFF;
+    --pink:#F6BACC;
+    --teal:#239DAB;
+    --cyan:#37B7C0;
+    --blue:#0D4D96;
+    --orange:#F49B2E;
+    --yellow:#FDD211;
+    --cream:#EFDAD2;
+    --magenta:#E83C6E;
+    --font-display:'Baloo 2', sans-serif;
+    --font-body:'Nunito', sans-serif;
+  }
+
+  *{box-sizing:border-box;}
+
+  html,body{
+    margin:0;
+    padding:0;
+    background:var(--cream);
+    font-family:var(--font-body);
+    color:var(--blue);
+    -webkit-tap-highlight-color:transparent;
+    min-height: 100vh;
+  }
+
+  body{
+    background-image:
+      radial-gradient(rgba(13,77,150,0.05) 1px, transparent 1px),
+      radial-gradient(rgba(13,77,150,0.04) 1px, transparent 1px);
+    background-size:24px 24px, 17px 17px;
+    background-position:0 0, 8px 8px;
+    padding: 20px 14px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .container {
+    max-width: 440px;
+    width: 100%;
+    background: var(--white);
+    border-radius: 24px;
+    padding: 24px 20px;
+    box-shadow: 0 10px 25px rgba(13,77,150,.1);
+    text-align: center;
+    position: relative;
+    border: 3px solid var(--cyan);
+  }
+
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+
+  .back-btn {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--cyan);
+    text-decoration: none;
+    border: 2px solid var(--cyan);
+    border-radius: 999px;
+    padding: 4px 14px;
+    background: var(--white);
+    cursor: pointer;
+  }
+
+  .back-btn:active {
+    background: var(--cyan);
+    color: var(--white);
+  }
+
+  .title {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 22px;
+    margin: 0;
+    color: var(--blue);
+  }
+
+  .clue-box {
+    background: rgba(55, 183, 192, 0.08);
+    border: 2px dashed var(--cyan);
+    border-radius: 16px;
+    padding: 14px;
+    margin-bottom: 20px;
+    font-size: 14px;
+    line-height: 1.5;
+    text-align: left;
+  }
+
+  .clue-box h3 {
+    margin: 0 0 6px 0;
+    font-family: var(--font-display);
+    color: var(--cyan);
+  }
+
+  /* Grid Map */
+  .map-container {
+    position: relative;
+    width: 280px;
+    height: 280px;
+    margin: 20px auto;
+    background: #fdfaf2;
+    border: 4px solid var(--cyan);
+    border-radius: 16px;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    grid-template-rows: repeat(5, 1fr);
+    gap: 2px;
+    padding: 2px;
+    box-shadow: 0 4px 12px rgba(13,77,150,0.1);
+  }
+
+  .map-cell {
+    background: #fffefb;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 18px;
+    color: rgba(13,77,150,0.3);
+    position: relative;
+    transition: background 0.3s, color 0.3s;
+  }
+
+  .map-cell.start {
+    background: var(--pink);
+    color: var(--magenta);
+  }
+
+  .map-cell.current {
+    background: var(--yellow);
+    color: var(--blue);
+    font-weight: 800;
+    box-shadow: inset 0 0 0 3px var(--orange);
+  }
+
+  .map-cell.visited {
+    background: rgba(55, 183, 192, 0.2);
+    color: var(--cyan);
+  }
+
+  /* Directional buttons / Compass */
+  .compass-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    margin-top: 24px;
+  }
+
+  .compass-row {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .compass-btn {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: var(--white);
+    border: 3px solid var(--cyan);
+    color: var(--cyan);
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 0 rgba(55, 183, 192, 0.3);
+    transition: transform 0.1s, box-shadow 0.1s;
+  }
+
+  .compass-btn:active {
+    transform: translateY(2px);
+    box-shadow: 0 2px 0 rgba(55, 183, 192, 0.3);
+  }
+
+  .instructions-steps {
+    font-size: 14px;
+    font-weight: 700;
+    margin: 15px 0;
+    color: var(--blue);
+    background: var(--cream);
+    padding: 8px 12px;
+    border-radius: 8px;
+  }
+
+  .success-overlay {
+    display: none;
+    position: absolute;
+    inset: 0;
+    background: var(--white);
+    border-radius: 24px;
+    z-index: 10;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    animation: scaleUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
+  }
+
+  @keyframes scaleUp {
+    from { transform: scale(0.9); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+
+  .success-emoji {
+    font-size: 64px;
+    margin-bottom: 12px;
+  }
+
+  .success-title {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 26px;
+    color: var(--cyan);
+    margin-bottom: 10px;
+  }
+
+  .success-text {
+    font-size: 15px;
+    line-height: 1.6;
+    margin-bottom: 24px;
+  }
+
+  .success-btn {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 16px;
+    color: var(--white);
+    background: var(--cyan);
+    border: none;
+    border-radius: 999px;
+    padding: 12px 40px;
+    cursor: pointer;
+    text-decoration: none;
+    box-shadow: 0 4px 0 rgba(55, 183, 192, 0.35);
+  }
+
+  .feedback {
+    min-height: 20px;
+    font-size: 13px;
+    font-weight: 700;
+    margin-top: 8px;
+    color: var(--magenta);
+  }
+</style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="header">
+      <a href="hub.html" class="back-btn">← Hub</a>
+      <h2 class="title">Énigme 2</h2>
+      <div style="width: 50px;"></div>
+    </div>
+
+    <div class="clue-box">
+      <h3>🧭 La Piste Secrète</h3>
+      Utilise la boussole pour suivre les instructions de l'éclaireur et révéler le mot secret. <br>
+      <strong>Le chemin à suivre :</strong><br>
+      1. ➡️ Est (2 fois)<br>
+      2. ⬇️ Sud (3 fois)<br>
+      3. ⬅️ Ouest (2 fois)<br>
+      4. ⬆️ Nord (1 fois)
+    </div>
+
+    <div class="instructions-steps" id="stepInfo">
+      Position de départ. Appuie sur "Est" pour commencer !
+    </div>
+
+    <div class="map-container" id="mapGrid">
+      <!-- 5x5 Grid populated with letters -->
+    </div>
+
+    <div class="compass-container">
+      <div class="compass-row">
+        <button class="compass-btn" id="btnN" aria-label="Nord">N</button>
+      </div>
+      <div class="compass-row">
+        <button class="compass-btn" id="btnW" aria-label="Ouest">O</button>
+        <div style="width: 52px; height: 52px; display: flex; align-items: center; justify-content: center; font-size: 24px;">🧭</div>
+        <button class="compass-btn" id="btnE" aria-label="Est">E</button>
+      </div>
+      <div class="compass-row">
+        <button class="compass-btn" id="btnS" aria-label="Sud">S</button>
+      </div>
+    </div>
+
+    <div class="feedback" id="feedbackMsg"></div>
+
+    <!-- Success Overlay -->
+    <div class="success-overlay" id="successOverlay">
+      <div class="success-emoji">🎉</div>
+      <h2 class="success-title">Chemin parcouru !</h2>
+      <p class="success-text">
+        Bravo ! Tu as suivi la piste secrète avec succès et récolté le mot magique :<br>
+        <strong>MIOS</strong>. <br>
+        La deuxième clé du coffre est à toi.
+      </p>
+      <a href="hub.html?win=2" class="success-btn">Retour au Hub</a>
+    </div>
+  </div>
+
+  <script src="state_jdpm.js"></script>
+  <script>
+    // 5x5 Grid representing the secret path
+    // Let's hide the letters M, I, O, S along the path
+    // Map layout:
+    // Row 0: [S*, A, B, C, D]
+    // Row 1: [E, F, G, H, I]
+    // Row 2: [J, M, K, L, M]
+    // Row 3: [N, O, P, Q, R]
+    // Row 4: [S, T, U, V, W]
+    // S* is start at (0,0)
+    // 1. Est (2 times) -> goes to (0,1), (0,2) [M]
+    // 2. Sud (3 times) -> goes to (1,2), (2,2) [I], (3,2) [O]
+    // 3. Ouest (2 times) -> goes to (3,1), (3,0) [S]
+    // 4. Nord (1 time) -> goes to (2,0)
+
+    // We will lay out letters so that the visited cells at the end of each segment reveal:
+    // (0,2) = 'M'
+    // (2,2) = 'I'
+    // (3,2) = 'O'
+    // (3,0) = 'S'
+    // This perfectly spells "MIOS"!
+
+    const mapLetters = [
+      ['Départ', 'A', 'M', 'X', 'Y'],
+      ['P', 'Q', 'R', 'S', 'T'],
+      ['F', 'G', 'I', 'U', 'V'],
+      ['S', 'Z', 'O', 'K', 'L'],
+      ['W', 'H', 'J', 'B', 'C']
+    ];
+
+    let posX = 0; // col
+    let posY = 0; // row
+
+    const correctPath = [
+      { dir: 'E', x: 1, y: 0 },
+      { dir: 'E', x: 2, y: 0, letter: 'M' },
+      { dir: 'S', x: 2, y: 1 },
+      { dir: 'S', x: 2, y: 2, letter: 'I' },
+      { dir: 'S', x: 2, y: 3, letter: 'O' },
+      { dir: 'O', x: 1, y: 3 },
+      { dir: 'O', x: 0, y: 3, letter: 'S' },
+      { dir: 'N', x: 0, y: 2 }
+    ];
+
+    let currentStepIndex = 0;
+    const collectedLetters = [];
+
+    const gridContainer = document.getElementById('mapGrid');
+    const stepInfo = document.getElementById('stepInfo');
+    const feedbackMsg = document.getElementById('feedbackMsg');
+    const successOverlay = document.getElementById('successOverlay');
+
+    // Generate grid HTML
+    function buildGrid() {
+      gridContainer.innerHTML = '';
+      for (let r = 0; r < 5; r++) {
+        for (let c = 0; c < 5; c++) {
+          const cell = document.createElement('div');
+          cell.className = 'map-cell';
+          if (r === 0 && c === 0) {
+            cell.classList.add('start');
+            cell.textContent = '🏠';
+          } else {
+            cell.textContent = mapLetters[r][c];
+          }
+          cell.id = `cell-${r}-${c}`;
+          gridContainer.appendChild(cell);
+        }
+      }
+      updateMapUI();
+    }
+
+    function updateMapUI() {
+      // Clear previous styles
+      const cells = document.querySelectorAll('.map-cell');
+      cells.forEach(c => {
+        c.classList.remove('current', 'visited');
+      });
+
+      // Mark current
+      const currCell = document.getElementById(`cell-${posY}-${posX}`);
+      if (currCell) currCell.classList.add('current');
+
+      // Mark visited cells along correct path up to currentStepIndex
+      for (let i = 0; i < currentStepIndex; i++) {
+        const p = correctPath[i];
+        const vCell = document.getElementById(`cell-${p.y}-${p.x}`);
+        if (vCell) vCell.classList.add('visited');
+      }
+    }
+
+    function handleMove(direction) {
+      const nextStep = correctPath[currentStepIndex];
+
+      if (!nextStep) return;
+
+      if (direction === nextStep.dir) {
+        posX = nextStep.x;
+        posY = nextStep.y;
+
+        if (nextStep.letter) {
+          collectedLetters.push(nextStep.letter);
+        }
+
+        currentStepIndex++;
+        updateMapUI();
+
+        // Update instruction text
+        if (currentStepIndex < correctPath.length) {
+          const next = correctPath[currentStepIndex];
+          const dirNames = { 'N': 'Nord', 'S': 'Sud', 'E': 'Est', 'O': 'Ouest' };
+          stepInfo.innerHTML = `Bravo ! Lettres : <strong>${collectedLetters.join('')}</strong>. Suivant : <strong>${dirNames[next.dir]}</strong>`;
+        } else {
+          stepInfo.innerHTML = `Bravo ! Lettres : <strong>${collectedLetters.join('')}</strong>. Tu es arrivé !`;
+          // Complete
+          setTimeout(() => {
+            markJdpmGameDone(2);
+            successOverlay.style.display = 'flex';
+          }, 800);
+        }
+      } else {
+        feedbackMsg.textContent = "Aïe, ce n'est pas la bonne direction ! Reviens sur tes pas.";
+        // Flash current cell red
+        const currCell = document.getElementById(`cell-${posY}-${posX}`);
+        currCell.style.background = 'var(--pink)';
+        setTimeout(() => {
+          feedbackMsg.textContent = "";
+          currCell.style.background = '';
+          updateMapUI();
+        }, 1500);
+      }
+    }
+
+    document.getElementById('btnN').addEventListener('click', () => handleMove('N'));
+    document.getElementById('btnS').addEventListener('click', () => handleMove('S'));
+    document.getElementById('btnE').addEventListener('click', () => handleMove('E'));
+    document.getElementById('btnW').addEventListener('click', () => handleMove('O'));
+
+    buildGrid();
+  </script>
+
+</body>
+</html>

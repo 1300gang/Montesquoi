@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Énigme 1 — L'Énigme du Sceau</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --white:#FFFFFF;
+    --pink:#F6BACC;
+    --teal:#239DAB;
+    --cyan:#37B7C0;
+    --blue:#0D4D96;
+    --orange:#F49B2E;
+    --yellow:#FDD211;
+    --cream:#EFDAD2;
+    --magenta:#E83C6E;
+    --font-display:'Baloo 2', sans-serif;
+    --font-body:'Nunito', sans-serif;
+  }
+
+  *{box-sizing:border-box;}
+
+  html,body{
+    margin:0;
+    padding:0;
+    background:var(--cream);
+    font-family:var(--font-body);
+    color:var(--blue);
+    -webkit-tap-highlight-color:transparent;
+    min-height: 100vh;
+  }
+
+  body{
+    background-image:
+      radial-gradient(rgba(13,77,150,0.05) 1px, transparent 1px),
+      radial-gradient(rgba(13,77,150,0.04) 1px, transparent 1px);
+    background-size:24px 24px, 17px 17px;
+    background-position:0 0, 8px 8px;
+    padding: 20px 14px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .container {
+    max-width: 440px;
+    width: 100%;
+    background: var(--white);
+    border-radius: 24px;
+    padding: 24px 20px;
+    box-shadow: 0 10px 25px rgba(13,77,150,.1);
+    text-align: center;
+    position: relative;
+    border: 3px solid var(--teal);
+  }
+
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+
+  .back-btn {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--teal);
+    text-decoration: none;
+    border: 2px solid var(--teal);
+    border-radius: 999px;
+    padding: 4px 14px;
+    background: var(--white);
+    cursor: pointer;
+  }
+
+  .back-btn:active {
+    background: var(--teal);
+    color: var(--white);
+  }
+
+  .title {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 22px;
+    margin: 0;
+    color: var(--blue);
+  }
+
+  .clue-box {
+    background: rgba(35, 157, 171, 0.08);
+    border: 2px dashed var(--teal);
+    border-radius: 16px;
+    padding: 14px;
+    margin-bottom: 20px;
+    font-size: 14px;
+    line-height: 1.5;
+    text-align: left;
+  }
+
+  .clue-box h3 {
+    margin: 0 0 6px 0;
+    font-family: var(--font-display);
+    color: var(--teal);
+  }
+
+  /* Cryptographic wheel */
+  .wheel-wrapper {
+    position: relative;
+    width: 250px;
+    height: 250px;
+    margin: 20px auto;
+    user-select: none;
+  }
+
+  .wheel-outer {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: var(--teal);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 6px 12px rgba(13,77,150,0.2);
+  }
+
+  .wheel-inner {
+    position: absolute;
+    width: 76%;
+    height: 76%;
+    border-radius: 50%;
+    background: var(--yellow);
+    box-shadow: inset 0 0 8px rgba(0,0,0,0.15), 0 4px 8px rgba(0,0,0,0.1);
+    cursor: grab;
+    transition: transform 0.1s ease-out;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .wheel-inner:active {
+    cursor: grabbing;
+  }
+
+  .wheel-center {
+    position: absolute;
+    width: 40%;
+    height: 40%;
+    border-radius: 50%;
+    background: var(--white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  }
+
+  /* Tick indicator */
+  .indicator-tick {
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-top: 15px solid var(--magenta);
+    z-index: 5;
+  }
+
+  /* Inner / Outer Letter Labels */
+  .letter-label {
+    position: absolute;
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 15px;
+    width: 20px;
+    height: 20px;
+    text-align: center;
+    line-height: 20px;
+  }
+
+  .outer-label {
+    color: var(--white);
+  }
+
+  .inner-label {
+    color: var(--blue);
+  }
+
+  /* Decoder UI */
+  .cipher-display {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    margin: 20px 0;
+  }
+
+  .crypto-text {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 24px;
+    letter-spacing: 0.15em;
+    color: var(--magenta);
+    margin: 0;
+  }
+
+  .input-field {
+    width: 100%;
+    padding: 12px 18px;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 18px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    border: 3px solid var(--cream);
+    border-radius: 999px;
+    outline: none;
+    text-align: center;
+    color: var(--blue);
+    transition: border-color 0.2s;
+  }
+  .input-field:focus {
+    border-color: var(--teal);
+  }
+
+  .validate-btn {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 16px;
+    color: var(--white);
+    background: var(--magenta);
+    border: none;
+    border-radius: 999px;
+    padding: 12px 32px;
+    cursor: pointer;
+    box-shadow: 0 4px 0 rgba(232, 60, 110, 0.35);
+    margin-top: 10px;
+    width: 100%;
+  }
+
+  .validate-btn:active {
+    transform: translateY(2px);
+    box-shadow: 0 2px 0 rgba(232, 60, 110, 0.35);
+  }
+
+  .feedback {
+    min-height: 20px;
+    font-size: 13px;
+    font-weight: 700;
+    margin-top: 8px;
+    color: var(--magenta);
+  }
+
+  .success-overlay {
+    display: none;
+    position: absolute;
+    inset: 0;
+    background: var(--white);
+    border-radius: 24px;
+    z-index: 10;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    animation: scaleUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
+  }
+
+  @keyframes scaleUp {
+    from { transform: scale(0.9); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+
+  .success-emoji {
+    font-size: 64px;
+    margin-bottom: 12px;
+  }
+
+  .success-title {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 26px;
+    color: var(--teal);
+    margin-bottom: 10px;
+  }
+
+  .success-text {
+    font-size: 15px;
+    line-height: 1.6;
+    margin-bottom: 24px;
+  }
+
+  .success-btn {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 16px;
+    color: var(--white);
+    background: var(--teal);
+    border: none;
+    border-radius: 999px;
+    padding: 12px 40px;
+    cursor: pointer;
+    text-decoration: none;
+    box-shadow: 0 4px 0 rgba(35, 157, 171, 0.35);
+  }
+</style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="header">
+      <a href="hub.html" class="back-btn">← Hub</a>
+      <h2 class="title">Énigme 1</h2>
+      <div style="width: 50px;"></div>
+    </div>
+
+    <div class="clue-box">
+      <h3>🗝️ Le Sceau Cryptographique</h3>
+      Fais tourner le disque intérieur pour aligner les lettres. <br>
+      Le code de déchiffrement trouvé est <strong>A = N</strong> (Décalage de 13).<br>
+      Décode le message ci-dessous pour trouver le mot secret !
+    </div>
+
+    <div class="wheel-wrapper">
+      <div class="indicator-tick"></div>
+      <div class="wheel-outer" id="wheelOuter">
+        <!-- JS will populate letters -->
+      </div>
+      <div class="wheel-inner" id="wheelInner">
+        <!-- JS will populate letters -->
+        <div class="wheel-center">🗝️</div>
+      </div>
+    </div>
+
+    <div class="cipher-display">
+      <span style="font-size: 13px; font-weight: 700; opacity: 0.7;">Message chiffré :</span>
+      <h3 class="crypto-text">ZBAGRFDHVRH</h3>
+    </div>
+
+    <input type="text" class="input-field" id="secretInput" placeholder="Saisis le mot déchiffré..." autocomplete="off" spellcheck="false">
+    <div class="feedback" id="feedbackMsg"></div>
+    <button class="validate-btn" id="validateBtn">Valider la réponse</button>
+
+    <!-- Success Overlay -->
+    <div class="success-overlay" id="successOverlay">
+      <div class="success-emoji">🎉</div>
+      <h2 class="success-title">Sceau Déverrouillé !</h2>
+      <p class="success-text">
+        Bravo ! Tu as déchiffré le message caché :<br>
+        <strong>MONTESQUIEU</strong>. <br>
+        La première clé du coffre est à toi.
+      </p>
+      <a href="hub.html?win=1" class="success-btn">Retour au Hub</a>
+    </div>
+  </div>
+
+  <script src="state_jdpm.js"></script>
+  <script>
+    const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+    const outerWheel = document.getElementById('wheelOuter');
+    const innerWheel = document.getElementById('wheelInner');
+
+    // Populate outer alphabet
+    alphabet.forEach((letter, index) => {
+      const angle = (index / 26) * 360;
+      const el = document.createElement('div');
+      el.className = 'letter-label outer-label';
+      el.textContent = letter;
+      // Position on outer rim
+      const radius = 106;
+      const x = Math.round(radius * Math.sin((angle * Math.PI) / 180));
+      const y = Math.round(-radius * Math.cos((angle * Math.PI) / 180));
+      el.style.transform = `translate(${x}px, ${y}px) rotate(${angle}deg)`;
+      outerWheel.appendChild(el);
+    });
+
+    // Populate inner alphabet
+    alphabet.forEach((letter, index) => {
+      const angle = (index / 26) * 360;
+      const el = document.createElement('div');
+      el.className = 'letter-label inner-label';
+      el.textContent = letter;
+      // Position on inner rim
+      const radius = 72;
+      const x = Math.round(radius * Math.sin((angle * Math.PI) / 180));
+      const y = Math.round(-radius * Math.cos((angle * Math.PI) / 180));
+      el.style.transform = `translate(${x}px, ${y}px) rotate(${angle}deg)`;
+      innerWheel.appendChild(el);
+    });
+
+    // Touch/drag rotation of the inner wheel
+    let isDragging = false;
+    let startAngle = 0;
+    let currentRotation = 0;
+
+    function getAngle(clientX, clientY) {
+      const rect = innerWheel.getBoundingClientRect();
+      const cx = rect.left + rect.width / 2;
+      const cy = rect.top + rect.height / 2;
+      const dx = clientX - cx;
+      const dy = clientY - cy;
+      return Math.atan2(dy, dx) * (180 / Math.PI);
+    }
+
+    function startDrag(e) {
+      isDragging = true;
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+      startAngle = getAngle(clientX, clientY) - currentRotation;
+    }
+
+    function drag(e) {
+      if (!isDragging) return;
+      e.preventDefault();
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+      currentRotation = getAngle(clientX, clientY) - startAngle;
+      innerWheel.style.transform = `rotate(${currentRotation}deg)`;
+    }
+
+    function stopDrag() {
+      isDragging = false;
+    }
+
+    innerWheel.addEventListener('mousedown', startDrag);
+    window.addEventListener('mousemove', drag);
+    window.addEventListener('mouseup', stopDrag);
+
+    innerWheel.addEventListener('touchstart', startDrag, { passive: false });
+    window.addEventListener('touchmove', drag, { passive: false });
+    window.addEventListener('touchend', stopDrag);
+
+    // Validation
+    const secretInput = document.getElementById('secretInput');
+    const validateBtn = document.getElementById('validateBtn');
+    const feedbackMsg = document.getElementById('feedbackMsg');
+    const successOverlay = document.getElementById('successOverlay');
+
+    validateBtn.addEventListener('click', () => {
+      const val = secretInput.value.trim().toUpperCase();
+      if (val === 'MONTESQUIEU') {
+        markJdpmGameDone(1);
+        successOverlay.style.display = 'flex';
+      } else {
+        feedbackMsg.textContent = "Ce n'est pas la bonne réponse... Réessaie !";
+        secretInput.style.borderColor = 'var(--magenta)';
+        setTimeout(() => {
+          feedbackMsg.textContent = "";
+          secretInput.style.borderColor = 'var(--cream)';
+        }, 3000);
+      }
+    });
+
+    secretInput.addEventListener('keydown', e => {
+      if (e.key === 'Enter') validateBtn.click();
+    });
+  </script>
+
+</body>
+</html>
