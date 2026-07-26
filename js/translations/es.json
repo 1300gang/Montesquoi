@@ -43,10 +43,12 @@
     "games": {
       "game1": {
         "title": "Juego 1 - Realidad Aumentada",
-        "subtitle": "Descifra el mensaje oculto",
-        "instructions": "Apunta la cámara hacia el objetivo para revelar la pista.",
+        "subtitle": "Escanear el objetivo",
+        "instructions": "Apunta la cámara hacia el objetivo impreso para revelar la pista.",
         "targetFound": "¡Objetivo detectado!",
-        "targetLost": "Objetivo perdido"
+        "targetLost": "Objetivo perdido",
+        "correct": "¡Bien hecho! Has resuelto el enigma.",
+        "placeholder": "Ingresa la respuesta…"
       },
       "game2": {
         "title": "Juego 2 - NFC/Código QR",

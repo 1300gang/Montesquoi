@@ -43,10 +43,12 @@
     "games": {
       "game1": {
         "title": "Jeu 1 - Réalité Augmentée",
-        "subtitle": "Décodez le message caché",
-        "instructions": "Pointez la caméra vers la cible pour révéler l'indice.",
+        "subtitle": "Scannez la cible",
+        "instructions": "Pointez la caméra vers la cible imprimée pour révéler l'indice.",
         "targetFound": "Cible détectée !",
-        "targetLost": "Cible perdue"
+        "targetLost": "Cible perdue",
+        "correct": "Bravo ! Vous avez résolu l'énigme.",
+        "placeholder": "Saisissez la réponse…"
       },
       "game2": {
         "title": "Jeu 2 - NFC/QR Code",

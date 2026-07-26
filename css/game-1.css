@@ -81,52 +81,39 @@ html, body {
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 }
 
-/* Mot à trous */
-#word-display-wrap {
+/* Message de détection */
+#detection-message {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--spacing-xs);
+  gap: var(--spacing-sm);
   pointer-events: none;
   margin-top: 20vh;
 }
 
-.word-label {
+.message-label {
   font-family: var(--font-display);
-  font-size: 12px;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: rgba(201, 168, 76, 0.7);
+  font-size: 14px;
+  letter-spacing: 0.1em;
+  color: rgba(201, 168, 76, 0.9);
   background: rgba(10, 8, 4, 0.7);
   backdrop-filter: blur(6px);
-  padding: var(--spacing-xs) var(--spacing-sm);
+  padding: var(--spacing-xs) var(--spacing-md);
   border-radius: var(--border-radius-sm);
 }
 
-#word-display {
+.target-display {
   font-family: var(--font-display);
-  font-size: clamp(24px, 8vw, 36px);
+  font-size: 48px;
   font-weight: 700;
-  letter-spacing: 0.3em;
   color: var(--orange);
   background: rgba(10, 8, 4, 0.8);
   backdrop-filter: blur(8px);
-  padding: var(--spacing-sm) var(--spacing-lg);
+  padding: var(--spacing-sm);
   border-radius: var(--border-radius-md);
   border: 1px solid rgba(201, 168, 76, 0.3);
-  min-width: 200px;
+  min-width: 80px;
   text-align: center;
-}
-
-/* Compteur de lettres */
-#letter-count {
-  font-family: var(--font-display);
-  font-size: 12px;
-  letter-spacing: 0.15em;
-  color: rgba(39, 174, 96, 0.9);
-  background: rgba(10, 8, 4, 0.7);
-  padding: var(--spacing-xs) var(--spacing-sm);
-  border-radius: var(--border-radius-sm);
 }
 
 /* Panneau bas */
@@ -265,8 +252,8 @@ html, body {
   color: var(--teal);
 }
 
-/* Toast "lettre trouvée" */
-#letter-toast {
+/* Toast "cible détectée" */
+#target-toast {
   position: fixed;
   top: 50%;
   left: 50%;
@@ -285,25 +272,20 @@ html, body {
   opacity: 0;
 }
 
-#letter-toast.show {
+#target-toast.show {
   transform: translate(-50%, -50%) scale(1);
   opacity: 1;
 }
 
-.toast-letter {
-  font-family: var(--font-display);
-  font-size: 48px;
-  font-weight: 700;
-  color: var(--teal);
-  line-height: 1;
+.toast-icon {
+  font-size: 36px;
 }
 
 .toast-label {
   font-family: var(--font-display);
-  font-size: 12px;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: rgba(201, 168, 76, 0.8);
+  font-size: 14px;
+  letter-spacing: 0.1em;
+  color: var(--teal);
 }
 
 /* Écran de victoire */
@@ -373,16 +355,6 @@ html, body {
   letter-spacing: 0.12em;
   text-align: center;
   animation: fadeUp 0.5s ease 0.35s both;
-}
-
-.win-word {
-  font-family: var(--font-display);
-  font-size: 26px;
-  font-weight: 700;
-  color: var(--teal);
-  letter-spacing: 0.35em;
-  text-transform: uppercase;
-  animation: fadeUp 0.5s ease 0.45s both;
 }
 
 .win-sub {
@@ -569,13 +541,13 @@ html, body {
 
 /* Responsive */
 @media (max-width: 480px) {
-  #word-display {
-    font-size: 24px;
-    padding: var(--spacing-sm) var(--spacing-md);
+  .target-display {
+    font-size: 36px;
+    padding: var(--spacing-xs);
   }
   
-  .toast-letter {
-    font-size: 36px;
+  .toast-icon {
+    font-size: 28px;
   }
   
   .page-indicator {

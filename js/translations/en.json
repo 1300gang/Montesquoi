@@ -43,10 +43,12 @@
     "games": {
       "game1": {
         "title": "Game 1 - Augmented Reality",
-        "subtitle": "Decode the hidden message",
-        "instructions": "Point the camera at the target to reveal the clue.",
+        "subtitle": "Scan the target",
+        "instructions": "Point the camera at the printed target to reveal the clue.",
         "targetFound": "Target detected!",
-        "targetLost": "Target lost"
+        "targetLost": "Target lost",
+        "correct": "Well done! You solved the puzzle.",
+        "placeholder": "Enter the answer…"
       },
       "game2": {
         "title": "Game 2 - NFC/QR Code",
