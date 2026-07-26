@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Jeu 1 - JDPM</title>
   
   <!-- Manifest PWA -->
@@ -27,33 +27,11 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
-  
-  <!-- Style pour l'indicateur de page -->
-  <style>
-    .page-indicator {
-      position: fixed;
-      bottom: 80px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: rgba(13, 77, 150, 0.1);
-      color: var(--blue);
-      font-family: var(--font-body);
-      font-size: 11px;
-      padding: 4px 10px;
-      border-radius: 999px;
-      z-index: 10;
-      opacity: 0.7;
-    }
-    @media (max-width: 480px) {
-      .page-indicator {
-        bottom: 70px;
-        font-size: 10px;
-        padding: 3px 8px;
-      }
-    }
-  </style>
 </head>
 <body>
+  <!-- Sélecteur de langue -->
+  <div class="lang-selector" id="langSelector"></div>
+
   <!-- Message hors ligne -->
   <div id="offline-message" style="display: none; position: fixed; top: 0; left: 0; right: 0; background: #E83C6E; color: white; padding: 10px; text-align: center; z-index: 1000;">
     ⚠️ <span id="offlineText">Mode hors ligne activé</span>
@@ -62,19 +40,89 @@
   <!-- Indication discrète de la page actuelle -->
   <div class="page-indicator" id="pageIndicator">Page: Jeu 1</div>
 
-  <div class="container">
-    <div class="game-container">
-      <header class="game-header">
-        <a href="hub.html" class="back-btn" id="backBtn">← HUB</a>
-        <h1 class="game-title" id="gameTitle">Jeu 1 - Réalité Augmentée</h1>
-        <button class="info-btn" id="infoBtn">ⓘ</button>
-      </header>
-      <main>
-        <p id="gameInstructions">Contenu du jeu en construction...</p>
-      </main>
-      <footer class="game-footer">
-        <!-- Boutons/inputs à ajouter -->
-      </footer>
+  <!-- Loader -->
+  <div id="ar-loader">
+    <div class="loader-ring"></div>
+    <p class="loader-text" id="loaderText">Initialisation du scanner...</p>
+  </div>
+
+  <!-- Conteneur de la scène AR -->
+  <div id="ar-container"></div>
+
+  <!-- Toast "lettre trouvée" -->
+  <div id="letter-toast">
+    <div class="toast-letter" id="toast-letter">A</div>
+    <div class="toast-label" id="toast-label">Lettre trouvée !</div>
+  </div>
+
+  <!-- UI layer -->
+  <div id="ui-layer">
+    <div id="header">
+      <a href="hub.html" id="btn-back" onclick="stopAR()">← HUB</a>
+      <span class="header-title" id="gameTitle">Jeu 1 - Réalité Augmentée</span>
+      <button class="info-btn" id="infoBtn" aria-label="Info">ⓘ</button>
+    </div>
+
+    <!-- Mot à trous -->
+    <div id="word-display-wrap">
+      <span class="word-label" id="wordLabel">Mot secret</span>
+      <div id="word-display">· · · ·</div>
+      <span id="letter-count">0 / 0 lettres</span>
+    </div>
+
+    <div id="bottom-panel">
+      <div class="instr-card" id="instr-card">
+        <span class="instr-icon">🔍</span>
+        <p class="instr-text" id="instrText">
+          Pointez la caméra vers les <strong>cartes imprimées</strong> pour révéler les lettres cachées.
+        </p>
+      </div>
+
+      <!-- Formulaire de validation -->
+      <div id="validation-wrap">
+        <div class="input-row">
+          <input
+            id="word-input"
+            type="text"
+            placeholder="Mot secret…"
+            autocomplete="off"
+            autocorrect="off"
+            autocapitalize="characters"
+            spellcheck="false"
+            enterkeyhint="done"
+          >
+          <button id="btn-validate">OK</button>
+        </div>
+        <div id="feedback">·</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Écran de victoire -->
+  <div id="win-screen">
+    <div class="particles" id="particles"></div>
+    <div class="win-orn">
+      <div class="win-line"></div>
+      <div class="win-diamond"></div>
+      <div class="win-line r"></div>
+    </div>
+    <div class="win-icon">🏆</div>
+    <div class="win-title" id="winTitle">Mot déchiffré !</div>
+    <div class="win-word" id="win-word-display"></div>
+    <p class="win-sub" id="winSub">La couche verte du masque se dissipe dans l'ombre…</p>
+    <a href="hub.html?win=1" id="btn-hub">← Retour au HUB</a>
+  </div>
+
+  <!-- Modal Info -->
+  <div id="info-modal">
+    <div class="modal-box">
+      <button class="modal-close" id="infoModalClose" aria-label="Fermer">✕</button>
+      <div class="modal-emoji">🔍</div>
+      <h2 class="modal-title" id="modalTitle">Jeu 1 - Réalité Augmentée</h2>
+      <p class="modal-text" id="modalText">
+        Pointez la caméra vers les cartes imprimées dans l'exposition pour révéler les lettres cachées. Reconstituez le mot secret pour valider ce jeu.
+      </p>
+      <button class="modal-cta" id="infoModalCta">OK</button>
     </div>
   </div>
 
@@ -84,60 +132,419 @@
   <script src="js/translations.js"></script>
   <script src="js/i18n-utils.js"></script>
   
-  <!-- Scripts spécifiques à la page -->
+  <!-- Librairies A-Frame et MindAR (CDN en fallback, à remplacer par des fichiers locaux pour le hors ligne) -->
+  <script src="https://cdn.jsdelivr.net/npm/aframe@1.4.2/dist/aframe.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+  
+  <!-- Scripts spécifiques au Jeu 1 -->
   <script>
-    // Mettre à jour les traductions de la page
-    async function updatePageTranslations() {
+    // ==========================================
+    // CONFIGURATION
+    // ==========================================
+    const TARGET_FILE = 'image/targets.mind';
+    
+    // Une entrée par target imprimée, dans le même ordre que lors de la compilation du .mind
+    const TARGETS = [
+      { letter: 'O', label: 'Première lettre' },
+      { letter: 'L', label: 'Deuxième lettre' },
+      { letter: 'A', label: 'Troisième lettre' },
+      { letter: 'C', label: 'Quatrième lettre' }
+    ];
+    
+    // Mot secret (lettres des targets dans l'ordre du mot)
+    const SECRET_WORD = 'OLAC';
+
+    // ==========================================
+    // ÉTAT LOCAL
+    // ==========================================
+    let collectedLetters = [];
+    let arScene = null;
+    let gameWon = false;
+
+    // Restaurer les lettres déjà collectées depuis state.js
+    function initCollectedLetters() {
+      const state = loadJdpmState();
+      // Si le jeu est déjà terminé, on ne fait rien
+      if (state.game_1_done) {
+        gameWon = true;
+      }
+      // Sinon, on charge les lettres sauvegardées (à implémenter si besoin)
+      // Pour l'instant, on part de zéro
+      collectedLetters = [];
+    }
+
+    // ==========================================
+    // CONSTRUCTION DE LA SCÈNE A-FRAME
+    // ==========================================
+    function buildScene() {
+      let entities = '';
+
+      TARGETS.forEach((t, index) => {
+        const alreadyFound = collectedLetters.includes(t.letter.toUpperCase());
+        const letterPng = `image/letters/letter-${t.letter.toUpperCase()}.png`;
+
+        if (alreadyFound) {
+          // Déjà trouvée : afficher la lettre directement
+          entities += `
+            <a-entity mindar-image-target="targetIndex: ${index}">
+              <a-image
+                src="${letterPng}"
+                width="1" height="1"
+                position="0 0 0.001"
+                animation="property: scale; from: 0 0 0; to: 1 1 1; dur: 400; easing: easeOutBack">
+              </a-image>
+            </a-entity>
+          `;
+        } else {
+          // Pas encore trouvée : entité vide
+          entities += `
+            <a-entity mindar-image-target="targetIndex: ${index}" id="target-entity-${index}">
+            </a-entity>
+          `;
+        }
+      });
+
+      const sceneHTML = `
+        <a-scene
+          id="ar-scene"
+          mindar-image="imageTargetSrc: ${TARGET_FILE}; uiScanning: no; maxTrack: ${TARGETS.length}"
+          color-space="sRGB"
+          renderer="colorManagement: true"
+          vr-mode-ui="enabled: false"
+          device-orientation-permission-ui="enabled: false"
+          embedded>
+
+          <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+          ${entities}
+          <a-light type="ambient" intensity="1.2"></a-light>
+          <a-light type="directional" position="1 2 1" intensity="1"></a-light>
+        </a-scene>
+      `;
+
+      document.getElementById('ar-container').innerHTML = sceneHTML;
+      arScene = document.getElementById('ar-scene');
+
+      if (arScene.hasLoaded) {
+        onSceneLoaded();
+      } else {
+        arScene.addEventListener('loaded', onSceneLoaded, { once: true });
+      }
+    }
+
+    function onSceneLoaded() {
+      document.getElementById('ar-loader').classList.add('hide');
+      attachTargetListeners();
+      refreshWordDisplay();
+      console.log('✅ Scène AR chargée');
+    }
+
+    // ==========================================
+    // LISTENERS SUR LES TARGETS
+    // ==========================================
+    function attachTargetListeners() {
+      const targetEntities = document.querySelectorAll('[mindar-image-target]');
+
+      targetEntities.forEach((entity) => {
+        const attr = entity.getAttribute('mindar-image-target');
+        let targetIndex;
+        if (typeof attr === 'object' && attr !== null) {
+          targetIndex = parseInt(attr.targetIndex);
+        } else {
+          const parts = String(attr).split(':');
+          targetIndex = parseInt(parts[parts.length - 1].trim());
+        }
+
+        if (isNaN(targetIndex) || targetIndex >= TARGETS.length) return;
+
+        const target = TARGETS[targetIndex];
+
+        entity.addEventListener('targetFound', () => {
+          console.log(`🎯 Target ${targetIndex} trouvée → lettre "${target.letter}"`);
+          collectLetter(targetIndex, target);
+        });
+
+        entity.addEventListener('targetLost', () => {
+          console.log(`Target ${targetIndex} perdue`);
+        });
+      });
+    }
+
+    // ==========================================
+    // COLLECTE D'UNE LETTRE
+    // ==========================================
+    function collectLetter(targetIndex, target) {
+      const letter = target.letter.toUpperCase();
+
+      // Déjà collectée → rappel visuel
+      if (collectedLetters.includes(letter)) {
+        showToast(letter, translate('games.game1.targetFound'));
+        return;
+      }
+
+      // Sauvegarder la lettre
+      collectedLetters.push(letter);
+
+      // Mettre à jour le plan AR
+      const entity = document.getElementById(`target-entity-${targetIndex}`);
+      if (entity) {
+        const letterPng = `image/letters/letter-${letter}.png`;
+        entity.innerHTML = `
+          <a-image
+            src="${letterPng}"
+            width="1" height="1"
+            position="0 0 0.001"
+            scale="0 0 0"
+            animation="property: scale; from: 0 0 0; to: 1 1 1; dur: 500; easing: easeOutBack">
+          </a-image>
+        `;
+      }
+
+      // Toast
+      showToast(letter, target.label || translate('games.game1.targetFound'));
+
+      // Refresh affichage
+      refreshWordDisplay();
+
+      // Vérifier si toutes les lettres sont collectées
+      checkAllCollected();
+    }
+
+    // ==========================================
+    // AFFICHAGE MOT À TROUS
+    // ==========================================
+    function refreshWordDisplay() {
+      const wordEl = document.getElementById('word-display');
+      const countEl = document.getElementById('letter-count');
+
+      const needed = [...new Set(SECRET_WORD.toUpperCase().split(''))];
+      const found = needed.filter(l => collectedLetters.includes(l));
+
+      let display = '';
+      for (const char of SECRET_WORD.toUpperCase()) {
+        if (collectedLetters.includes(char)) {
+          display += `<span style="color:var(--teal)">${char}</span> `;
+        } else {
+          display += `<span style="color:rgba(245,240,232,0.25)">_</span> `;
+        }
+      }
+
+      wordEl.innerHTML = display.trim();
+      countEl.textContent = `${found.length} / ${needed.length} ${translate('games.game3.placeholder').toLowerCase()}`;
+    }
+
+    // ==========================================
+    // VÉRIFICATION TOUTES LES LETTRES COLLECTÉES
+    // ==========================================
+    function checkAllCollected() {
+      const needed = [...new Set(SECRET_WORD.toUpperCase().split(''))];
+      const allFound = needed.every(l => collectedLetters.includes(l));
+
+      if (allFound) {
+        console.log('✅ Toutes les lettres collectées !');
+        document.getElementById('validation-wrap').classList.add('show');
+        document.getElementById('instr-card').querySelector('.instr-text').innerHTML = translate('games.game1.instructions').replace('cartes imprimées', '<strong>' + translate('games.game1.instructions').split('cartes imprimées')[1].split('pour')[0] + '</strong>');
+        setTimeout(() => {
+          document.getElementById('word-input').focus();
+        }, 400);
+      }
+    }
+
+    // ==========================================
+    // TOAST LETTRE
+    // ==========================================
+    let toastTimeout = null;
+
+    function showToast(letter, label) {
+      const toast = document.getElementById('letter-toast');
+      document.getElementById('toast-letter').textContent = letter;
+      document.getElementById('toast-label').textContent = label;
+
+      if (toastTimeout) clearTimeout(toastTimeout);
+
+      toast.classList.add('show');
+      toastTimeout = setTimeout(() => {
+        toast.classList.remove('show');
+      }, 1800);
+    }
+
+    // ==========================================
+    // VALIDATION DU MOT
+    // ==========================================
+    function normalize(str) {
+      return str.trim().toUpperCase()
+        .normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    }
+
+    function validateWord() {
+      const input = document.getElementById('word-input');
+      const raw = normalize(input.value);
+      const secret = normalize(SECRET_WORD);
+
+      if (!raw) {
+        showFeedback(translate('modals.error.text'), true);
+        triggerShake();
+        return;
+      }
+
+      if (raw === secret) {
+        onSuccess(raw);
+      } else {
+        showFeedback(translate('modals.error.text'), true);
+        triggerShake();
+      }
+    }
+
+    function triggerShake() {
+      const inp = document.getElementById('word-input');
+      inp.classList.remove('error');
+      void inp.offsetWidth;
+      inp.classList.add('error');
+      setTimeout(() => inp.classList.remove('error'), 400);
+    }
+
+    function showFeedback(msg, isError) {
+      const fb = document.getElementById('feedback');
+      fb.textContent = msg;
+      fb.className = 'show ' + (isError ? 'is-error' : 'is-success');
+    }
+
+    // ==========================================
+    // VICTOIRE
+    // ==========================================
+    function onSuccess(word) {
+      if (gameWon) return;
+      gameWon = true;
+      stopAR();
+      markJdpmGameDone(1);
+
+      document.getElementById('win-word-display').textContent = word;
+      spawnParticles();
+      setTimeout(() => document.getElementById('win-screen').classList.add('show'), 300);
+    }
+
+    function spawnParticles() {
+      const c = document.getElementById('particles');
+      c.innerHTML = '';
+      const cols = ['#c9a84c', '#e8d49a', '#27ae60', '#1a4a2e', '#a8e6cf', '#2ecc71'];
+      for (let i = 0; i < 44; i++) {
+        const p = document.createElement('div');
+        p.className = 'particle';
+        const sz = 4 + Math.random() * 6;
+        Object.assign(p.style, {
+          left: Math.random() * 100 + '%',
+          background: cols[Math.floor(Math.random() * cols.length)],
+          width: sz + 'px',
+          height: sz + 'px',
+          borderRadius: Math.random() > 0.5 ? '50%' : '2px',
+          animationDuration: (1.4 + Math.random() * 2) + 's',
+          animationDelay: (Math.random() * 0.8) + 's',
+        });
+        c.appendChild(p);
+      }
+    }
+
+    // ==========================================
+    // ARRÊT AR
+    // ==========================================
+    function stopAR() {
+      try {
+        const scene = document.getElementById('ar-scene');
+        if (scene && scene.systems && scene.systems['mindar-image-system']) {
+          scene.systems['mindar-image-system'].stop();
+        }
+      } catch (e) {
+        console.warn('stopAR:', e);
+      }
+      document.getElementById('ar-container').innerHTML = '';
+    }
+
+    // ==========================================
+    // MODAL INFO
+    // ==========================================
+    const infoModal = document.getElementById('info-modal');
+    function openInfoModal() { infoModal.classList.add('open'); }
+    function closeInfoModal() { infoModal.classList.remove('open'); }
+
+    document.getElementById('infoBtn').addEventListener('click', openInfoModal);
+    document.getElementById('infoModalClose').addEventListener('click', closeInfoModal);
+    document.getElementById('infoModalCta').addEventListener('click', closeInfoModal);
+    infoModal.addEventListener('click', e => { if (e.target === infoModal) closeInfoModal(); });
+
+    // ==========================================
+    // EVENTS
+    // ==========================================
+    document.getElementById('btn-validate').addEventListener('click', validateWord);
+    document.getElementById('word-input').addEventListener('keydown', e => {
+      if (e.key === 'Enter') { e.preventDefault(); validateWord(); }
+    });
+
+    // ==========================================
+    // INIT
+    // ==========================================
+    async function initGame1() {
+      // Initialiser les traductions
       await initializeLanguage();
+      updateTranslations();
+
+      // Enregistrer le Service Worker
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/js/service-worker.js');
+      }
+
+      // Détection du mode hors ligne
+      function checkOnlineStatus() {
+        const isOnline = navigator.onLine;
+        const offlineMessage = document.getElementById('offline-message');
+        if (!isOnline && offlineMessage) {
+          offlineMessage.style.display = 'block';
+        } else if (offlineMessage) {
+          offlineMessage.style.display = 'none';
+        }
+      }
+      window.addEventListener('online', checkOnlineStatus);
+      window.addEventListener('offline', checkOnlineStatus);
+      checkOnlineStatus();
+
+      initCollectedLetters();
+      buildScene();
+
+      // Si toutes les lettres étaient déjà sauvegardées
+      const needed = [...new Set(SECRET_WORD.toUpperCase().split(''))];
+      const allFound = needed.every(l => collectedLetters.includes(l));
+      if (allFound) {
+        checkAllCollected();
+      }
+    }
+
+    // ==========================================
+    // METTRE À JOUR LES TRADUCTIONS
+    // ==========================================
+    function updateTranslations() {
+      const lang = getCurrentLanguage();
       
       // Mettre à jour les textes
-      document.getElementById('backBtn').textContent = translate('buttons.backToHub');
       document.getElementById('gameTitle').textContent = translate('games.game1.title');
-      document.getElementById('gameInstructions').textContent = translate('games.game1.instructions');
+      document.getElementById('wordLabel').textContent = translate('games.game1.subtitle');
+      document.getElementById('instrText').innerHTML = translate('games.game1.instructions').replace('cartes imprimées', '<strong>' + translate('games.game1.instructions').split('cartes imprimées')[1].split('pour')[0] + '</strong>');
+      document.getElementById('btn-validate').textContent = translate('buttons.validate');
+      document.getElementById('word-input').placeholder = translate('games.game3.placeholder');
+      document.getElementById('loaderText').textContent = translate('misc.loading');
+      document.getElementById('modalTitle').textContent = translate('games.game1.title');
+      document.getElementById('modalText').textContent = translate('games.game1.instructions');
+      document.getElementById('infoModalCta').textContent = translate('modals.welcome.cta');
+      document.getElementById('winTitle').textContent = translate('modals.success.title');
+      document.getElementById('winSub').textContent = translate('games.game1.instructions');
+      document.getElementById('btn-hub').textContent = translate('buttons.backToHub');
       document.getElementById('offlineText').textContent = translate('misc.offline');
       document.getElementById('pageIndicator').textContent = `Page: ${translate('games.game1.title').split(' - ')[0] || 'Jeu 1'}`;
     }
 
     // Écouter les changements de langue
-    window.addEventListener('languageChanged', updatePageTranslations);
-    
-    // Initialiser au chargement
-    document.addEventListener('DOMContentLoaded', updatePageTranslations);
-  </script>
-  
-  <!-- Enregistrement du Service Worker et détection hors ligne -->
-  <script>
-    // Enregistrement du Service Worker
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/js/service-worker.js')
-          .then((registration) => {
-            console.log('✅ Service Worker enregistré avec succès:', registration.scope);
-          })
-          .catch((error) => {
-            console.error('❌ Erreur lors de l\'enregistrement du Service Worker:', error);
-          });
-      });
-    }
+    window.addEventListener('languageChanged', updateTranslations);
 
-    // Détection du mode hors ligne
-    function checkOnlineStatus() {
-      const isOnline = navigator.onLine;
-      const offlineMessage = document.getElementById('offline-message');
-      
-      if (!isOnline && offlineMessage) {
-        offlineMessage.style.display = 'block';
-      } else if (offlineMessage) {
-        offlineMessage.style.display = 'none';
-      }
-    }
-    
-    // Écouter les changements de statut
-    window.addEventListener('online', checkOnlineStatus);
-    window.addEventListener('offline', checkOnlineStatus);
-    
-    // Vérifier au chargement
-    document.addEventListener('DOMContentLoaded', checkOnlineStatus);
+    // Initialiser au chargement
+    window.addEventListener('load', initGame1);
+    window.addEventListener('beforeunload', stopAR);
   </script>
 </body>
 </html>

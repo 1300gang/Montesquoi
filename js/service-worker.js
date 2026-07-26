@@ -4,7 +4,7 @@
 // JDPM - Journées du Patrimoine et Matrimoine
 // ==========================================
 
-const CACHE_NAME = 'jdpm-v2';
+const CACHE_NAME = 'jdpm-v3';
 const ASSETS_TO_CACHE = [
   // Pages HTML
   '/',
@@ -35,6 +35,10 @@ const ASSETS_TO_CACHE = [
   '/js/translations.js',
   '/js/i18n-utils.js',
   
+  // Librairies (à télécharger localement pour le hors ligne)
+  '/js/lib/aframe.min.js',
+  '/js/lib/mindar-image-aframe.prod.js',
+  
   // Images (placeholders)
   '/image/placeholders/mad-logo.svg',
   '/image/placeholders/1300gang-logo.svg',
@@ -43,6 +47,12 @@ const ASSETS_TO_CACHE = [
   '/image/qcm/qcm-2.svg',
   '/image/qcm/qcm-3.svg',
   '/image/qcm/qcm-4.svg',
+  '/image/letters/letter-O.png',
+  '/image/letters/letter-O.svg',
+  '/image/letters/letter-L.svg',
+  '/image/letters/letter-A.svg',
+  '/image/letters/letter-C.svg',
+  '/image/targets.mind',
   '/image/icons/icon-72x72.svg',
   '/image/icons/icon-512x512.svg',
   
