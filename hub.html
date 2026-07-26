@@ -46,19 +46,10 @@
       <p class="prize-message" id="prizeMessage">Gagnez un livre sur le design !</p>
     </header>
 
-    <!-- Section QR Code -->
-    <section class="qr-section">
-      <h2 class="qr-title" id="qrTitle">Commencez l'aventure</h2>
-      <p class="qr-subtitle" id="qrSubtitle">Scannez ce QR code pour démarrer</p>
-      <div class="qr-code-container">
-        <!-- QR Code généré via QR Server API -->
-        <img 
-          src="https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=https://1300gang.github.io/Montesquoi/hub.html&bgcolor=FFFFFF&color=239DAB&margin=10"
-          alt="QR Code pour commencer l'aventure"
-          class="qr-code"
-        >
-        <p class="qr-instructions" id="qrInstructions">Pointez votre caméra ici</p>
-      </div>
+    <!-- Section d'introduction (remplace le QR code) -->
+    <section class="intro-section">
+      <h2 class="intro-title" id="introTitle">Choisissez une énigme</h2>
+      <p class="intro-subtitle" id="introSubtitle">Touchez une carte ci-dessous pour commencer</p>
     </section>
 
     <!-- Cartes des jeux -->
@@ -267,9 +258,8 @@
       document.getElementById('hubTitle').innerHTML = translate('hub.title').replace('Super', 'Super <span>1300</span>');
       document.getElementById('hubSubtitle').textContent = translate('hub.subtitle');
       document.getElementById('prizeMessage').textContent = translate('hub.prize');
-      document.getElementById('qrTitle').textContent = translate('games.game2.title');
-      document.getElementById('qrSubtitle').textContent = translate('games.game2.instructions');
-      document.getElementById('qrInstructions').textContent = translate('misc.loading');
+      document.getElementById('introTitle').textContent = translate('hub.startBtn');
+      document.getElementById('introSubtitle').textContent = "Touchez une carte ci-dessous pour commencer";
       document.getElementById('progressLabel').textContent = translate('hub.progress');
       document.getElementById('progressOf').textContent = translate('hub.of');
       document.getElementById('progressEnigmas').textContent = translate('hub.enigmasSolved');

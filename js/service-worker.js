@@ -48,9 +48,6 @@ const ASSETS_TO_CACHE = [
   
   // Manifest
   '/manifest.json',
-  
-  // QR Code (externe, mais mis en cache si possible)
-  'https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=https://1300gang.github.io/Montesquoi/hub.html&bgcolor=FFFFFF&color=239DAB&margin=10',
 ];
 
 // ------------------------------------------

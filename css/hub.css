@@ -72,8 +72,8 @@
   display: inline-block;
 }
 
-/* ---------- QR CODE SECTION ---------- */
-.qr-section {
+/* ---------- INTRO SECTION (remplace le QR code) ---------- */
+.intro-section {
   text-align: center;
   margin: var(--spacing-lg) 0;
   padding: var(--spacing-md);
@@ -83,7 +83,7 @@
   border: 2px dashed var(--teal);
 }
 
-.qr-title {
+.intro-title {
   font-family: var(--font-display);
   font-weight: 700;
   font-size: 18px;
@@ -91,33 +91,30 @@
   margin-bottom: var(--spacing-sm);
 }
 
-.qr-subtitle {
+.intro-subtitle {
   font-size: 14px;
   color: rgba(13, 77, 150, 0.7);
   margin-bottom: var(--spacing-md);
 }
 
-.qr-code-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: var(--spacing-md);
-  flex-direction: column;
+/* Bouton "Démarrer l'aventure" */
+.start-btn {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 16px;
+  color: var(--white);
+  background: linear-gradient(135deg, var(--orange), var(--magenta));
+  border: none;
+  border-radius: 999px;
+  padding: var(--spacing-sm) var(--spacing-xl);
+  cursor: pointer;
+  box-shadow: 0 6px 0 rgba(232, 60, 110, 0.35);
+  transition: all var(--transition-fast);
 }
 
-.qr-code {
-  width: 80vw;
-  max-width: 300px;
-  height: auto;
-  border: 4px solid var(--teal);
-  border-radius: var(--border-radius-md);
-  box-shadow: var(--box-shadow-md);
-}
-
-.qr-instructions {
-  font-size: 12px;
-  color: rgba(13, 77, 150, 0.6);
-  font-style: italic;
+.start-btn:active {
+  transform: translateY(3px);
+  box-shadow: 0 2px 0 rgba(232, 60, 110, 0.35);
 }
 
 /* ---------- CARDS (Jeux) ---------- */
@@ -531,7 +528,8 @@
 .info-btn:focus-visible,
 .game-card:focus-visible,
 .modal-close:focus-visible,
-.modal-cta:focus-visible {
+.modal-cta:focus-visible,
+.start-btn:focus-visible {
   outline: 3px dashed var(--orange);
   outline-offset: 3px;
 }
