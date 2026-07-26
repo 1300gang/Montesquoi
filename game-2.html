@@ -27,12 +27,40 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Style pour l'indicateur de page -->
+  <style>
+    .page-indicator {
+      position: fixed;
+      bottom: 80px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(13, 77, 150, 0.1);
+      color: var(--blue);
+      font-family: var(--font-body);
+      font-size: 11px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      z-index: 10;
+      opacity: 0.7;
+    }
+    @media (max-width: 480px) {
+      .page-indicator {
+        bottom: 70px;
+        font-size: 10px;
+        padding: 3px 8px;
+      }
+    }
+  </style>
 </head>
 <body>
   <!-- Message hors ligne -->
   <div id="offline-message" style="display: none; position: fixed; top: 0; left: 0; right: 0; background: #E83C6E; color: white; padding: 10px; text-align: center; z-index: 1000;">
-    ⚠️ Mode hors ligne activé
+    ⚠️ <span id="offlineText">Mode hors ligne activé</span>
   </div>
+
+  <!-- Indication discrète de la page actuelle -->
+  <div class="page-indicator" id="pageIndicator">Page: Jeu 2</div>
 
   <div class="container">
     <div class="game-container">
@@ -66,12 +94,8 @@
       document.getElementById('backBtn').textContent = translate('buttons.backToHub');
       document.getElementById('gameTitle').textContent = translate('games.game2.title');
       document.getElementById('gameInstructions').textContent = translate('games.game2.instructions');
-      
-      // Mettre à jour le message hors ligne
-      const offlineMessage = document.getElementById('offline-message');
-      if (offlineMessage) {
-        offlineMessage.textContent = `⚠️ ${translate('misc.offline')}`;
-      }
+      document.getElementById('offlineText').textContent = translate('misc.offline');
+      document.getElementById('pageIndicator').textContent = `Page: ${translate('games.game2.title').split(' - ')[0] || 'Jeu 2'}`;
     }
 
     // Écouter les changements de langue

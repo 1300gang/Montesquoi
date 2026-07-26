@@ -4,7 +4,7 @@
 // JDPM - Journées du Patrimoine et Matrimoine
 // ==========================================
 
-const CACHE_NAME = 'jdpm-v1';
+const CACHE_NAME = 'jdpm-v2';
 const ASSETS_TO_CACHE = [
   // Pages HTML
   '/',
@@ -33,6 +33,7 @@ const ASSETS_TO_CACHE = [
   '/js/state.js',
   '/js/utils.js',
   '/js/translations.js',
+  '/js/i18n-utils.js',
   
   // Images (placeholders)
   '/image/placeholders/mad-logo.svg',
@@ -42,9 +43,14 @@ const ASSETS_TO_CACHE = [
   '/image/qcm/qcm-2.svg',
   '/image/qcm/qcm-3.svg',
   '/image/qcm/qcm-4.svg',
+  '/image/icons/icon-72x72.svg',
+  '/image/icons/icon-512x512.svg',
   
   // Manifest
   '/manifest.json',
+  
+  // QR Code (externe, mais mis en cache si possible)
+  'https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=https://1300gang.github.io/Montesquoi/hub.html&bgcolor=FFFFFF&color=239DAB&margin=10',
 ];
 
 // ------------------------------------------

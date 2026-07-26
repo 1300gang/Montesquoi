@@ -25,141 +25,267 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
-  
-  <!-- Styles pour le sélecteur de langue -->
-  <style>
-    .lang-selector {
-      position: fixed;
-      top: 10px;
-      right: 10px;
-      z-index: 1000;
-      display: flex;
-      gap: 5px;
-      background: rgba(255, 255, 255, 0.9);
-      padding: 5px;
-      border-radius: var(--border-radius-md);
-      box-shadow: var(--box-shadow-sm);
-    }
-    .lang-btn {
-      font-size: 20px;
-      background: none;
-      border: none;
-      cursor: pointer;
-      padding: 5px;
-      border-radius: 50%;
-      transition: background var(--transition-fast);
-    }
-    .lang-btn:hover {
-      background: rgba(13, 77, 150, 0.1);
-    }
-    .lang-btn.active {
-      background: rgba(13, 77, 150, 0.2);
-    }
-  </style>
 </head>
 <body>
+  <!-- Sélecteur de langue -->
+  <div class="lang-selector" id="langSelector"></div>
+
   <!-- Message hors ligne -->
   <div id="offline-message" style="display: none; position: fixed; top: 0; left: 0; right: 0; background: #E83C6E; color: white; padding: 10px; text-align: center; z-index: 1000;">
-    ⚠️ Mode hors ligne activé. Certaines fonctionnalités peuvent être limitées.
+    ⚠️ <span id="offlineText">Mode hors ligne activé</span>
   </div>
 
-  <!-- Sélecteur de langue -->
-  <div class="lang-selector" id="langSelector">
-    <button class="lang-btn" data-lang="fr" title="Français">🇫🇷</button>
-    <button class="lang-btn" data-lang="en" title="English">🇬🇧</button>
-    <button class="lang-btn" data-lang="es" title="Español">🇪🇸</button>
+  <!-- Indication discrète de la page actuelle -->
+  <div class="page-indicator" id="pageIndicator">Page: HUB</div>
+
+  <div class="hub-wrap">
+    <header class="hub-header">
+      <span class="eyebrow" id="hubSubtitle">Chasse aux énigmes</span>
+      <h1 class="hub-title" id="hubTitle">Super <span>1300</span></h1>
+      <div class="dashed-rule"></div>
+      <p class="prize-message" id="prizeMessage">Gagnez un livre sur le design !</p>
+    </header>
+
+    <!-- Section QR Code -->
+    <section class="qr-section">
+      <h2 class="qr-title" id="qrTitle">Commencez l'aventure</h2>
+      <p class="qr-subtitle" id="qrSubtitle">Scannez ce QR code pour démarrer</p>
+      <div class="qr-code-container">
+        <!-- QR Code généré via QR Server API -->
+        <img 
+          src="https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=https://1300gang.github.io/Montesquoi/hub.html&bgcolor=FFFFFF&color=239DAB&margin=10"
+          alt="QR Code pour commencer l'aventure"
+          class="qr-code"
+        >
+        <p class="qr-instructions" id="qrInstructions">Pointez votre caméra ici</p>
+      </div>
+    </section>
+
+    <!-- Cartes des jeux -->
+    <main class="cards" id="cardsContainer"></main>
+
+    <!-- Bouton de réinitialisation -->
+    <div class="reset-btn-container">
+      <button class="reset-btn" id="resetBtn">Réinitialiser le jeu</button>
+    </div>
   </div>
 
-  <!-- Contenu à ajouter plus tard -->
-  <div class="container">
-    <h1 id="hubTitle">JDPM - Chasse aux Énigmes</h1>
-    <p id="hubSubtitle">Page HUB en construction...</p>
+  <!-- Barre de progression -->
+  <div class="progress-bar">
+    <div class="progress-inner">
+      <div class="progress-label">
+        <span id="progressLabel">Progression</span>
+        <span><b id="progressCount">0</b> <span id="progressOf">/</span>5 <span id="progressEnigmas">énigmes résolues</span></span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+    </div>
   </div>
+
+  <!-- Modal d'introduction -->
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal-box">
+      <button class="modal-close" id="modalClose" aria-label="Fermer">✕</button>
+      <div class="modal-emoji">🏭</div>
+      <h2 class="modal-title" id="modalTitle">Bienvenue, explorateur·ice !</h2>
+      <p class="modal-text" id="modalText">
+        5 énigmes t'attendent sur le chemin. Résous-les une par une pour remplir la jauge en bas de l'écran et débloquer le trésor final. Touche une carte pour démarrer une énigme.
+      </p>
+      <button class="modal-cta" id="modalCta">C'est parti !</button>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
 
   <!-- Scripts -->
   <script src="js/state.js"></script>
   <script src="js/utils.js"></script>
   <script src="js/translations.js"></script>
+  <script src="js/i18n-utils.js"></script>
   
-  <!-- Initialisation des traductions -->
+  <!-- Scripts spécifiques au HUB -->
   <script>
-    // Initialiser la langue
-    async function initTranslations() {
-      await initializeLanguage();
-      updateLanguageUI();
+    // ==========================================
+    // Données des 5 jeux
+    // ==========================================
+    const games = [
+      { id: 1, title: "Jeu 1 - Réalité Augmentée", sub: "Décodez le message caché", emoji: "🔍", href: "game-1.html" },
+      { id: 2, title: "Jeu 2 - NFC/QR Code", sub: "Scannez le code pour continuer", emoji: "📱", href: "game-2.html" },
+      { id: 3, title: "Jeu 3 - Recherche d'image", sub: "Trouvez le détail caché", emoji: "🖼️", href: "game-3.html" },
+      { id: 4, title: "Jeu 4 - Énigme", sub: "Résolvez l'énigme", emoji: "🤔", href: "game-4.html" },
+      { id: 5, title: "Jeu 5 - QCM", sub: "Choisissez la bonne réponse", emoji: "🎯", href: "game-5.html" },
+    ];
+
+    const checkSvg = `<svg viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+
+    const container = document.getElementById('cardsContainer');
+
+    // ==========================================
+    // Rendre les cartes des jeux
+    // ==========================================
+    function renderCards() {
+      const state = loadJdpmState();
+      container.innerHTML = '';
+      games.forEach(g => {
+        const isDone = state[`game_${g.id}_done`];
+        const card = document.createElement('button');
+        card.className = 'game-card' + (isDone ? ' done' : '');
+        card.setAttribute('role', 'button');
+        card.setAttribute('aria-pressed', isDone);
+        card.innerHTML = `
+          <div class="stub">${isDone ? '✓' : g.id}</div>
+          <div class="card-body">
+            <p class="card-title">${g.emoji} ${g.title}</p>
+            <p class="card-sub">${isDone ? 'Résolue – bravo !' : g.sub}</p>
+          </div>
+          <div class="status">${checkSvg}</div>
+        `;
+
+        card.addEventListener('click', () => {
+          window.location.href = g.href;
+        });
+        container.appendChild(card);
+      });
     }
 
-    // Mettre à jour l'UI avec les traductions
-    function updateLanguageUI() {
-      const lang = getCurrentLanguage();
-      const metadata = getLanguageMetadata(lang);
-      
-      // Mettre à jour les boutons de langue
-      document.querySelectorAll('.lang-btn').forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.lang === lang);
-      });
-      
-      // Mettre à jour les textes
-      document.getElementById('hubTitle').textContent = translate('hub.title');
-      document.getElementById('hubSubtitle').textContent = translate('hub.subtitle');
-      
-      // Mettre à jour le message hors ligne
-      const offlineMessage = document.getElementById('offline-message');
-      if (offlineMessage) {
-        offlineMessage.textContent = `⚠️ ${translate('misc.offline')}`;
+    // ==========================================
+    // Mettre à jour la barre de progression
+    // ==========================================
+    function updateProgress() {
+      const state = loadJdpmState();
+      const doneCount = games.filter(g => state[`game_${g.id}_done`]).length;
+      document.getElementById('progressCount').textContent = doneCount;
+      document.getElementById('progressFill').style.width = (doneCount / games.length * 100) + '%';
+    }
+
+    // ==========================================
+    // Modal d'introduction
+    // ==========================================
+    const overlay = document.getElementById('modalOverlay');
+    function openModal() { overlay.classList.add('open'); }
+    function closeModal() { overlay.classList.remove('open'); }
+
+    document.getElementById('modalClose').addEventListener('click', closeModal);
+    document.getElementById('modalCta').addEventListener('click', closeModal);
+    overlay.addEventListener('click', e => { if (e.target === overlay) closeModal(); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+    // ==========================================
+    // Bouton de réinitialisation
+    // ==========================================
+    document.getElementById('resetBtn').addEventListener('click', () => {
+      if (confirm("Réinitialiser toute ta progression ? Toutes les énigmes résolues seront perdues.")) {
+        resetJdpmState();
+        renderCards();
+        updateProgress();
+        showToast("Progression réinitialisée !");
+      }
+    });
+
+    // ==========================================
+    // Toast Notification
+    // ==========================================
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 3000);
+    }
+
+    // ==========================================
+    // Vérifier les paramètres URL
+    // ==========================================
+    function checkUrlParams() {
+      const params = new URLSearchParams(window.location.search);
+      const winParam = params.get('win');
+      if (winParam) {
+        const gameId = parseInt(winParam);
+        if (gameId >= 1 && gameId <= 5) {
+          markJdpmGameDone(gameId);
+          showToast(`Bravo ! Énigme ${gameId} résolue ! 🎉`);
+          history.replaceState(null, '', window.location.pathname);
+        }
       }
     }
 
-    // Changer de langue
-    document.querySelectorAll('.lang-btn').forEach(btn => {
-      btn.addEventListener('click', async () => {
-        await setLanguage(btn.dataset.lang);
-        updateLanguageUI();
-      });
-    });
+    // ==========================================
+    // Initialisation
+    // ==========================================
+    async function initHub() {
+      // Initialiser les traductions
+      await initializeLanguage();
+      updateTranslations();
 
-    // Écouter les changements de langue
-    window.addEventListener('languageChanged', () => {
-      updateLanguageUI();
-    });
-
-    // Initialiser au chargement
-    document.addEventListener('DOMContentLoaded', initTranslations);
-  </script>
-  
-  <!-- Enregistrement du Service Worker -->
-  <script>
-    // Enregistrement du Service Worker
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
+      // Enregistrer le Service Worker
+      if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('/js/service-worker.js')
           .then((registration) => {
-            console.log('✅ Service Worker enregistré avec succès:', registration.scope);
+            console.log('✅ Service Worker enregistré:', registration.scope);
           })
           .catch((error) => {
-            console.error('❌ Erreur lors de l\'enregistrement du Service Worker:', error);
+            console.error('❌ Erreur Service Worker:', error);
           });
-      });
-    }
+      }
 
-    // Détection du mode hors ligne
-    function checkOnlineStatus() {
-      const isOnline = navigator.onLine;
-      const offlineMessage = document.getElementById('offline-message');
-      
-      if (!isOnline && offlineMessage) {
-        offlineMessage.style.display = 'block';
-      } else if (offlineMessage) {
-        offlineMessage.style.display = 'none';
+      // Détection du mode hors ligne
+      function checkOnlineStatus() {
+        const isOnline = navigator.onLine;
+        const offlineMessage = document.getElementById('offline-message');
+        if (!isOnline && offlineMessage) {
+          offlineMessage.style.display = 'block';
+        } else if (offlineMessage) {
+          offlineMessage.style.display = 'none';
+        }
+      }
+      window.addEventListener('online', checkOnlineStatus);
+      window.addEventListener('offline', checkOnlineStatus);
+      checkOnlineStatus();
+
+      // Vérifier les paramètres URL
+      checkUrlParams();
+
+      // Rendre les cartes et mettre à jour la progression
+      renderCards();
+      updateProgress();
+
+      // Ouvrir la modal d'introduction au premier chargement
+      if (!localStorage.getItem('jdpm_visited')) {
+        localStorage.setItem('jdpm_visited', 'true');
+        window.addEventListener('load', () => setTimeout(openModal, 300));
       }
     }
-    
-    // Écouter les changements de statut
-    window.addEventListener('online', checkOnlineStatus);
-    window.addEventListener('offline', checkOnlineStatus);
-    
-    // Vérifier au chargement
-    document.addEventListener('DOMContentLoaded', checkOnlineStatus);
+
+    // ==========================================
+    // Mettre à jour les traductions
+    // ==========================================
+    function updateTranslations() {
+      const lang = getCurrentLanguage();
+      
+      // Mettre à jour les textes
+      document.getElementById('hubTitle').innerHTML = translate('hub.title').replace('Super', 'Super <span>1300</span>');
+      document.getElementById('hubSubtitle').textContent = translate('hub.subtitle');
+      document.getElementById('prizeMessage').textContent = translate('hub.prize');
+      document.getElementById('qrTitle').textContent = translate('games.game2.title');
+      document.getElementById('qrSubtitle').textContent = translate('games.game2.instructions');
+      document.getElementById('qrInstructions').textContent = translate('misc.loading');
+      document.getElementById('progressLabel').textContent = translate('hub.progress');
+      document.getElementById('progressOf').textContent = translate('hub.of');
+      document.getElementById('progressEnigmas').textContent = translate('hub.enigmasSolved');
+      document.getElementById('resetBtn').textContent = translate('hub.resetBtn');
+      document.getElementById('modalTitle').textContent = translate('modals.welcome.title');
+      document.getElementById('modalText').textContent = translate('modals.welcome.text');
+      document.getElementById('modalCta').textContent = translate('modals.welcome.cta');
+      document.getElementById('offlineText').textContent = translate('misc.offline');
+      document.getElementById('pageIndicator').textContent = `Page: ${translate('hub.title').split(' - ')[0] || 'HUB'}`;
+    }
+
+    // Écouter les changements de langue
+    window.addEventListener('languageChanged', updateTranslations);
+
+    // Initialiser au chargement
+    document.addEventListener('DOMContentLoaded', initHub);
   </script>
 </body>
 </html>
