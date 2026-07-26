@@ -1,0 +1,40 @@
+/* ============================================
+   GAME-4 CSS
+   Styles spécifiques pour le Jeu 4 (Énigme)
+   ============================================ */
+
+@import url('_variables.css');
+
+/* Conteneur pour l'énigme */
+.enigma-container {
+  width: 100%;
+  background: var(--white);
+  border-radius: var(--border-radius-md);
+  padding: var(--spacing-md);
+  margin: var(--spacing-md) 0;
+  border: 2px solid var(--teal);
+}
+
+/* Texte de l'énigme */
+.enigma-text {
+  font-family: var(--font-body);
+  font-size: 16px;
+  color: var(--blue);
+  line-height: 1.6;
+  margin-bottom: var(--spacing-md);
+}
+
+/* Zone de réponse */
+.answer-zone {
+  width: 100%;
+  margin-top: var(--spacing-md);
+}
+
+/* Indice */
+.hint-text {
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: var(--orange);
+  margin-top: var(--spacing-sm);
+  font-style: italic;
+}

@@ -1,0 +1,50 @@
+/* ============================================
+   GAME-5 CSS
+   Styles spécifiques pour le Jeu 5 (QCM)
+   ============================================ */
+
+@import url('_variables.css');
+
+/* Conteneur pour le QCM */
+.qcm-container {
+  width: 100%;
+  margin: var(--spacing-md) 0;
+}
+
+/* Question */
+.qcm-question {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--blue);
+  margin-bottom: var(--spacing-lg);
+}
+
+/* Liste des réponses */
+.qcm-options {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+/* Carte sélectionnée */
+.qcm-card.selected {
+  background: rgba(35, 157, 171, 0.2);
+  border-color: var(--cyan);
+}
+
+/* Feedback pour la réponse */
+.qcm-feedback {
+  font-family: var(--font-display);
+  font-size: 14px;
+  margin-top: var(--spacing-md);
+  min-height: 20px;
+}
+
+.qcm-feedback.correct {
+  color: var(--teal);
+}
+
+.qcm-feedback.incorrect {
+  color: var(--magenta);
+}

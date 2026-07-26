@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>JDPM - Chasse aux Énigmes</title>
+  <title>Félicitations ! - JDPM</title>
   
   <!-- Manifest PWA -->
   <link rel="manifest" href="/manifest.json">
@@ -11,7 +11,7 @@
   <!-- Préchargement des assets critiques -->
   <link rel="preload" href="css/_variables.css" as="style">
   <link rel="preload" href="css/base.css" as="style">
-  <link rel="preload" href="css/hub.css" as="style">
+  <link rel="preload" href="css/success.css" as="style">
   <link rel="preload" href="js/state.js" as="script">
   <link rel="preload" href="js/utils.js" as="script">
   <link rel="preload" href="js/translations.js" as="script">
@@ -19,89 +19,39 @@
   <!-- Styles -->
   <link rel="stylesheet" href="css/_variables.css">
   <link rel="stylesheet" href="css/base.css">
-  <link rel="stylesheet" href="css/hub.css">
+  <link rel="stylesheet" href="css/success.css">
   
   <!-- Polices -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
-  
-  <!-- Styles pour le sélecteur de langue -->
-  <style>
-    .lang-selector {
-      position: fixed;
-      top: 10px;
-      right: 10px;
-      z-index: 1000;
-      display: flex;
-      gap: 5px;
-      background: rgba(255, 255, 255, 0.9);
-      padding: 5px;
-      border-radius: var(--border-radius-md);
-      box-shadow: var(--box-shadow-sm);
-    }
-    .lang-btn {
-      font-size: 20px;
-      background: none;
-      border: none;
-      cursor: pointer;
-      padding: 5px;
-      border-radius: 50%;
-      transition: background var(--transition-fast);
-    }
-    .lang-btn:hover {
-      background: rgba(13, 77, 150, 0.1);
-    }
-    .lang-btn.active {
-      background: rgba(13, 77, 150, 0.2);
-    }
-  </style>
 </head>
 <body>
   <!-- Message hors ligne -->
   <div id="offline-message" style="display: none; position: fixed; top: 0; left: 0; right: 0; background: #E83C6E; color: white; padding: 10px; text-align: center; z-index: 1000;">
-    ⚠️ Mode hors ligne activé. Certaines fonctionnalités peuvent être limitées.
+    ⚠️ Mode hors ligne activé
   </div>
 
-  <!-- Sélecteur de langue -->
-  <div class="lang-selector" id="langSelector">
-    <button class="lang-btn" data-lang="fr" title="Français">🇫🇷</button>
-    <button class="lang-btn" data-lang="en" title="English">🇬🇧</button>
-    <button class="lang-btn" data-lang="es" title="Español">🇪🇸</button>
-  </div>
-
-  <!-- Contenu à ajouter plus tard -->
   <div class="container">
-    <h1 id="hubTitle">JDPM - Chasse aux Énigmes</h1>
-    <p id="hubSubtitle">Page HUB en construction...</p>
+    <h1 id="successTitle">Félicitations !</h1>
+    <p id="successMessage">Page de réussite en construction...</p>
   </div>
 
   <!-- Scripts -->
   <script src="js/state.js"></script>
   <script src="js/utils.js"></script>
   <script src="js/translations.js"></script>
+  <script src="js/i18n-utils.js"></script>
   
-  <!-- Initialisation des traductions -->
+  <!-- Scripts spécifiques à la page -->
   <script>
-    // Initialiser la langue
-    async function initTranslations() {
+    // Mettre à jour les traductions de la page
+    async function updatePageTranslations() {
       await initializeLanguage();
-      updateLanguageUI();
-    }
-
-    // Mettre à jour l'UI avec les traductions
-    function updateLanguageUI() {
-      const lang = getCurrentLanguage();
-      const metadata = getLanguageMetadata(lang);
-      
-      // Mettre à jour les boutons de langue
-      document.querySelectorAll('.lang-btn').forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.lang === lang);
-      });
       
       // Mettre à jour les textes
-      document.getElementById('hubTitle').textContent = translate('hub.title');
-      document.getElementById('hubSubtitle').textContent = translate('hub.subtitle');
+      document.getElementById('successTitle').textContent = translate('success.title');
+      document.getElementById('successMessage').textContent = translate('success.message');
       
       // Mettre à jour le message hors ligne
       const offlineMessage = document.getElementById('offline-message');
@@ -110,24 +60,14 @@
       }
     }
 
-    // Changer de langue
-    document.querySelectorAll('.lang-btn').forEach(btn => {
-      btn.addEventListener('click', async () => {
-        await setLanguage(btn.dataset.lang);
-        updateLanguageUI();
-      });
-    });
-
     // Écouter les changements de langue
-    window.addEventListener('languageChanged', () => {
-      updateLanguageUI();
-    });
-
+    window.addEventListener('languageChanged', updatePageTranslations);
+    
     // Initialiser au chargement
-    document.addEventListener('DOMContentLoaded', initTranslations);
+    document.addEventListener('DOMContentLoaded', updatePageTranslations);
   </script>
   
-  <!-- Enregistrement du Service Worker -->
+  <!-- Enregistrement du Service Worker et détection hors ligne -->
   <script>
     // Enregistrement du Service Worker
     if ('serviceWorker' in navigator) {

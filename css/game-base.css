@@ -1,0 +1,235 @@
+/* ============================================
+   GAME BASE CSS
+   Styles communs à tous les jeux
+   ============================================ */
+
+@import url('_variables.css');
+
+/* Conteneur principal des jeux */
+.game-container {
+  max-width: 440px;
+  width: 100%;
+  background: var(--white);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-lg);
+  box-shadow: var(--box-shadow-md);
+  text-align: center;
+  position: relative;
+  margin: var(--spacing-md) auto;
+}
+
+/* Header des jeux (commun à toutes les pages) */
+.game-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-lg);
+  padding-bottom: var(--spacing-md);
+  border-bottom: 2px dashed var(--teal);
+}
+
+/* Bouton retour au HUB */
+.back-btn {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--teal);
+  text-decoration: none;
+  border: 2px solid var(--teal);
+  border-radius: 999px;
+  padding: var(--spacing-xs) var(--spacing-md);
+  background: var(--white);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.back-btn:hover {
+  background: var(--teal);
+  color: var(--white);
+}
+
+.back-btn:active {
+  background: var(--teal);
+  color: var(--white);
+  transform: translateY(2px);
+}
+
+/* Titre du jeu */
+.game-title {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 22px;
+  margin: 0;
+  color: var(--blue);
+}
+
+/* Bouton Info (ouvre la modal) */
+.info-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 2px solid var(--blue);
+  background: var(--white);
+  color: var(--blue);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 17px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 3px 0 rgba(13, 77, 150, 0.25);
+  transition: all var(--transition-fast);
+}
+
+.info-btn:active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 rgba(13, 77, 150, 0.25);
+}
+
+/* Footer des jeux (commun) */
+.game-footer {
+  margin-top: var(--spacing-lg);
+  padding-top: var(--spacing-md);
+  border-top: 2px dashed var(--teal);
+}
+
+/* Input pour les réponses (Jeu 3, 4, 5) */
+.game-input {
+  width: 100%;
+  padding: var(--spacing-sm) var(--spacing-md);
+  font-family: var(--font-body);
+  font-size: 16px;
+  border: 2px solid var(--teal);
+  border-radius: var(--border-radius-md);
+  background: var(--white);
+  color: var(--blue);
+  transition: border-color var(--transition-fast);
+}
+
+.game-input:focus {
+  outline: none;
+  border-color: var(--orange);
+}
+
+.game-input::placeholder {
+  color: rgba(13, 77, 150, 0.4);
+}
+
+/* Bouton de validation */
+.validate-btn {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--white);
+  background: linear-gradient(135deg, var(--orange), var(--magenta));
+  border: none;
+  border-radius: 999px;
+  padding: var(--spacing-sm) var(--spacing-lg);
+  cursor: pointer;
+  box-shadow: 0 6px 0 rgba(232, 60, 110, 0.35);
+  transition: all var(--transition-fast);
+  margin-top: var(--spacing-sm);
+}
+
+.validate-btn:active {
+  transform: translateY(3px);
+  box-shadow: 0 2px 0 rgba(232, 60, 110, 0.35);
+}
+
+/* Bouton pour activer la caméra (Jeu 1, 2) */
+.camera-btn {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--white);
+  background: var(--teal);
+  border: none;
+  border-radius: var(--border-radius-md);
+  padding: var(--spacing-sm) var(--spacing-lg);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.camera-btn:active {
+  background: var(--cyan);
+}
+
+/* Zone de feedback (erreur/succès) */
+.feedback {
+  font-family: var(--font-display);
+  font-size: 12px;
+  margin-top: var(--spacing-xs);
+  min-height: 16px;
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+}
+
+.feedback.show {
+  opacity: 1;
+}
+
+.feedback.error {
+  color: var(--magenta);
+}
+
+.feedback.success {
+  color: var(--teal);
+}
+
+/* Bouton indice (Jeu 4) */
+.hint-btn {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 12px;
+  color: var(--orange);
+  background: transparent;
+  border: 1px solid var(--orange);
+  border-radius: var(--border-radius-md);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  margin-top: var(--spacing-sm);
+}
+
+.hint-btn:hover {
+  background: rgba(244, 155, 46, 0.1);
+}
+
+/* Cartes pour le QCM (Jeu 5) */
+.qcm-card {
+  background: var(--white);
+  border: 2px solid var(--teal);
+  border-radius: var(--border-radius-md);
+  padding: var(--spacing-md);
+  margin: var(--spacing-sm) 0;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.qcm-card:hover {
+  background: rgba(35, 157, 171, 0.05);
+  border-color: var(--cyan);
+}
+
+.qcm-card.selected {
+  background: rgba(35, 157, 171, 0.1);
+  border-color: var(--cyan);
+}
+
+.qcm-card img {
+  width: 60px;
+  height: 60px;
+  border-radius: var(--border-radius-sm);
+  object-fit: cover;
+}
+
+.qcm-card .title {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--blue);
+}
