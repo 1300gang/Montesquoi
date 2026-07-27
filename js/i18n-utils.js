@@ -70,9 +70,9 @@ function initI18n() {
     });
     
     // Mettre à jour le message hors ligne
-    const offlineMessage = document.getElementById('offline-message');
-    if (offlineMessage) {
-      offlineMessage.textContent = `⚠️ ${translate('misc.offline')}`;
+    const offlineText = document.getElementById('offlineText');
+    if (offlineText) {
+      offlineText.textContent = translate('misc.offline');
     }
   }
 
