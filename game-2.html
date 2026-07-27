@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Jeu 2 - JDPM</title>
+  
+  <!-- Manifest PWA -->
+  <link rel="manifest" href="/manifest.json">
+  
+  <!-- Préchargement des assets critiques -->
+  <link rel="preload" href="css/_variables.css" as="style">
+  <link rel="preload" href="css/base.css" as="style">
+  <link rel="preload" href="css/game-base.css" as="style">
+  <link rel="preload" href="css/game-2.css" as="style">
+  <link rel="preload" href="js/state.js" as="script">
+  <link rel="preload" href="js/utils.js" as="script">
+  <link rel="preload" href="js/translations.js" as="script">
+  
+  <!-- Styles -->
+  <link rel="stylesheet" href="css/_variables.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/game-base.css">
+  <link rel="stylesheet" href="css/game-2.css">
+  
+  <!-- Polices -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Style pour l'indicateur de page -->
+  <style>
+    .page-indicator {
+      position: fixed;
+      bottom: 80px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(13, 77, 150, 0.1);
+      color: var(--blue);
+      font-family: var(--font-body);
+      font-size: 11px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      z-index: 10;
+      opacity: 0.7;
+    }
+    @media (max-width: 480px) {
+      .page-indicator {
+        bottom: 70px;
+        font-size: 10px;
+        padding: 3px 8px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Message hors ligne -->
+  <div id="offline-message" style="display: none; position: fixed; top: 0; left: 0; right: 0; background: #E83C6E; color: white; padding: 10px; text-align: center; z-index: 1000;">
+    ⚠️ <span id="offlineText">Mode hors ligne activé</span>
+  </div>
+
+  <!-- Indication discrète de la page actuelle -->
+  <div class="page-indicator" id="pageIndicator">Page: Jeu 2</div>
+
+  <div class="container">
+    <div class="game-container">
+      <header class="game-header">
+        <a href="hub.html" class="back-btn" id="backBtn">← HUB</a>
+        <h1 class="game-title" id="gameTitle">Jeu 2 - NFC/QR Code</h1>
+        <button class="info-btn" id="infoBtn">ⓘ</button>
+      </header>
+
+      <main>
+        <section class="scanner-section">
+          <h2 class="scanner-title" id="scannerTitle">Détection automatique NFC active...</h2>
+          <p class="scanner-subtitle" id="scannerInstructions">
+            Approchez votre appareil du tag NFC. Si rien ne se passe ou si votre appareil n'est pas compatible, utilisez le bouton ci-dessous pour scanner le QR Code.
+          </p>
+          <button id="scan-btn">Scanner le QR Code (Fallback)</button>
+        </section>
+      </main>
+
+      <footer class="game-footer">
+        <!-- Vide pour ce jeu -->
+      </footer>
+    </div>
+  </div>
+
+  <!-- Modal du scanner QR -->
+  <div id="qr-modal">
+    <div id="qr-modal-header">
+      <h2 id="qr-modal-title">Scanner un QR Code</h2>
+      <button id="qr-close-btn" aria-label="Fermer">✕</button>
+    </div>
+    <div id="qr-video-container">
+      <video id="qr-video" autoplay playsinline></video>
+      <canvas id="qr-canvas"></canvas>
+      <div id="qr-overlay"></div>
+    </div>
+    <p id="qr-instructions">Pointez la caméra vers le QR code.</p>
+    <p id="qr-feedback"></p>
+  </div>
+
+  <!-- Écran de victoire -->
+  <div id="win-screen">
+    <div class="win-icon">🎉</div>
+    <h2 class="win-title" id="winTitle">Félicitations !</h2>
+    <p class="win-sub" id="winSub">QR Code ou NFC valide ! Vous avez résolu cette énigme.</p>
+    <a href="hub.html?win=2" id="btn-hub">Retour au HUB</a>
+  </div>
+
+  <!-- Modal Info -->
+  <div id="info-modal">
+    <div class="modal-box">
+      <button class="modal-close" id="infoModalClose" aria-label="Fermer">✕</button>
+      <div class="modal-emoji">📱</div>
+      <h2 class="modal-title" id="infoModalTitle">Jeu 2 - NFC/QR Code</h2>
+      <p class="modal-text" id="infoModalInstructions">
+        Approchez votre appareil d'un tag NFC ou scannez le QR code affiché dans l'exposition pour valider ce jeu.
+      </p>
+      <button class="modal-cta" id="infoModalCta">OK</button>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/state.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/translations.js"></script>
+  <script src="js/i18n-utils.js"></script>
+  <script src="js/lib/jsqr.min.js"></script>
+  <script src="js/qr-scanner.js"></script>
+  
+  <script>
+    // ==========================================
+    // CONFIGURATION
+    // ==========================================
+    const VALID_QR_CODES = ['JDPM-GAME-2', 'MAD-EXPO-2024', '1300GANG-JDPM'];
+    let gameWon = false;
+
+    // ==========================================
+    // INITIALISATION
+    // ==========================================
+    async function updatePageTranslations() {
+      await initializeLanguage();
+      
+      // Mettre à jour les textes
+      document.getElementById('backBtn').textContent = translate('buttons.backToHub');
+      document.getElementById('gameTitle').textContent = translate('games.game2.title');
+
+      // En fonction de la compatibilité NFC, on adapte la consigne
+      if (typeof NDEFReader !== 'undefined') {
+        document.getElementById('scannerTitle').textContent = "Détection automatique NFC active...";
+        document.getElementById('scannerInstructions').textContent = translate('games.game2.instructions') + " Si cela ne fonctionne pas, utilisez le fallback QR Code.";
+      } else {
+        document.getElementById('scannerTitle').textContent = translate('games.game2.subtitle');
+        document.getElementById('scannerInstructions').textContent = translate('games.game2.instructions');
+      }
+
+      document.getElementById('scan-btn').textContent = "Scanner le QR Code (Fallback)";
+      document.getElementById('qr-modal-title').textContent = translate('games.game2.qrModalTitle');
+      document.getElementById('qr-instructions').textContent = translate('games.game2.qrModalInstructions');
+      document.getElementById('winTitle').textContent = translate('modals.success.title');
+      document.getElementById('winSub').textContent = translate('games.game2.qrSuccess');
+      document.getElementById('btn-hub').textContent = translate('buttons.backToHub');
+      document.getElementById('infoModalTitle').textContent = translate('games.game2.title');
+      document.getElementById('infoModalInstructions').textContent = translate('games.game2.instructions');
+      document.getElementById('infoModalCta').textContent = translate('modals.welcome.cta');
+      document.getElementById('offlineText').textContent = translate('misc.offline');
+      document.getElementById('pageIndicator').textContent = `Page: ${translate('games.game2.title').split(' - ')[0] || 'Jeu 2'}`;
+    }
+
+    // Écouter les changements de langue
+    window.addEventListener('languageChanged', updatePageTranslations);
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      await updatePageTranslations();
+
+      // Enregistrer le Service Worker
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/js/service-worker.js');
+      }
+
+      // Détection du mode hors ligne
+      function checkOnlineStatus() {
+        const isOnline = navigator.onLine;
+        const offlineMessage = document.getElementById('offline-message');
+        if (!isOnline && offlineMessage) {
+          offlineMessage.style.display = 'block';
+        } else if (offlineMessage) {
+          offlineMessage.style.display = 'none';
+        }
+      }
+      window.addEventListener('online', checkOnlineStatus);
+      window.addEventListener('offline', checkOnlineStatus);
+      checkOnlineStatus();
+      
+      // Vérifier si le jeu est déjà terminé
+      const state = loadJdpmState();
+      if (state.game_2_done) {
+        gameWon = true;
+        showWinScreen();
+      }
+
+      // Initialiser le scanner QR
+      try {
+        await initQRScanner({
+          validCodes: VALID_QR_CODES,
+          onSuccess: onQRSuccess,
+          onError: onQRError,
+        });
+
+        // Tentative de détection automatique NFC immédiate
+        if (typeof NDEFReader !== 'undefined') {
+          console.log("NFC supporté. Lancement automatique de l'écoute NFC...");
+          detectNFC();
+        }
+      } catch (error) {
+        console.error('❌ Erreur d\'initialisation du scanner:', error);
+      }
+    });
+
+    // ==========================================
+    // GESTION DU SCANNER QR
+    // ==========================================
+    const qrModal = document.getElementById('qr-modal');
+    const scanBtn = document.getElementById('scan-btn');
+    const qrCloseBtn = document.getElementById('qr-close-btn');
+    const qrFeedback = document.getElementById('qr-feedback');
+
+    // Ouvrir la modal du scanner
+    scanBtn.addEventListener('click', async () => {
+      if (gameWon) return;
+
+      try {
+        await startQRScanner('qr-video', 'qr-canvas');
+        qrModal.classList.add('open');
+        qrFeedback.textContent = '';
+        qrFeedback.className = '';
+      } catch (error) {
+        console.error('❌ Erreur:', error);
+        qrFeedback.textContent = translate('games.game2.qrError');
+        qrFeedback.className = 'show error';
+      }
+    });
+
+    // Fermer la modal du scanner
+    qrCloseBtn.addEventListener('click', () => {
+      stopQRScanner();
+      qrModal.classList.remove('open');
+    });
+
+    // Fermer la modal en cliquant à l'extérieur
+    qrModal.addEventListener('click', (e) => {
+      if (e.target === qrModal) {
+        stopQRScanner();
+        qrModal.classList.remove('open');
+      }
+    });
+
+    // Succès : QR code valide
+    function onQRSuccess(code) {
+      console.log('✅ QR Code ou NFC valide:', code);
+      qrFeedback.textContent = translate('games.game2.qrSuccess');
+      qrFeedback.className = 'show success';
+
+      // Marquer le jeu comme terminé après un délai
+      setTimeout(() => {
+        qrModal.classList.remove('open');
+        onSuccess();
+      }, 1000);
+    }
+
+    // Erreur : QR code invalide
+    function onQRError(code) {
+      qrFeedback.textContent = translate('games.game2.qrError');
+      qrFeedback.className = 'show error';
+
+      // Réinitialiser le feedback après 2 secondes
+      setTimeout(() => {
+        qrFeedback.className = '';
+      }, 2000);
+    }
+
+    // ==========================================
+    // VICTOIRE
+    // ==========================================
+    function onSuccess() {
+      if (gameWon) return;
+      gameWon = true;
+      markJdpmGameDone(2);
+      showWinScreen();
+    }
+
+    function showWinScreen() {
+      document.getElementById('win-screen').classList.add('show');
+    }
+
+    // ==========================================
+    // MODAL INFO
+    // ==========================================
+    const infoModal = document.getElementById('info-modal');
+    function openInfoModal() { infoModal.classList.add('open'); }
+    function closeInfoModal() { infoModal.classList.remove('open'); }
+
+    document.getElementById('infoBtn').addEventListener('click', openInfoModal);
+    document.getElementById('infoModalClose').addEventListener('click', closeInfoModal);
+    document.getElementById('infoModalCta').addEventListener('click', closeInfoModal);
+    infoModal.addEventListener('click', e => { if (e.target === infoModal) closeInfoModal(); });
+
+    // ==========================================
+    // UTILITAIRES
+    // ==========================================
+    function showFeedback(msg, isError) {
+      qrFeedback.textContent = msg;
+      qrFeedback.className = 'show ' + (isError ? 'error' : 'success');
+    }
+  </script>
+</body>
+</html>

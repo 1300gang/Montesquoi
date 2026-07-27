@@ -1,0 +1,102 @@
+{
+  "language": "en",
+  "name": "English",
+  "flag": "🇬🇧",
+  "direction": "ltr",
+  "translations": {
+    "hub": {
+      "title": "Heritage and Matrimony Days",
+      "subtitle": "Treasure Hunt at MAD",
+      "startBtn": "Start the Adventure",
+      "progress": "Progress",
+      "of": "of",
+      "enigmasSolved": "puzzles solved",
+      "prize": "Win a book on design!",
+      "resetBtn": "Reset the Game"
+    },
+    "buttons": {
+      "backToHub": "Back to HUB",
+      "info": "Info",
+      "validate": "Validate",
+      "cancel": "Cancel",
+      "hint": "Hint",
+      "next": "Next",
+      "retry": "Retry"
+    },
+    "modals": {
+      "welcome": {
+        "title": "Welcome, explorer!",
+        "text": "5 puzzles await you on the path. Solve them one by one to fill the gauge at the bottom of the screen and unlock the final treasure. Tap a card to start a puzzle.",
+        "cta": "Let's go!"
+      },
+      "success": {
+        "title": "Congratulations!",
+        "text": "You solved this puzzle!",
+        "cta": "Back to HUB"
+      },
+      "error": {
+        "title": "Error",
+        "text": "That's not the correct answer. Try again!",
+        "cta": "OK"
+      }
+    },
+    "games": {
+      "game1": {
+        "title": "Game 1 - Augmented Reality",
+        "subtitle": "Scan the target",
+        "instructions": "Point the camera at the printed target to reveal the clue.",
+        "targetFound": "Target detected!",
+        "targetLost": "Target lost",
+        "correct": "Well done! You solved the puzzle.",
+        "placeholder": "Enter the answer…"
+      },
+      "game2": {
+        "title": "Game 2 - NFC/QR Code",
+        "subtitle": "Scan the code to continue",
+        "instructions": "Bring your device close to the NFC tag or scan the QR code.",
+        "qrModalTitle": "Scan a QR Code",
+        "qrModalInstructions": "Point the camera at the QR code.",
+        "qrSuccess": "Valid QR Code!",
+        "qrError": "Invalid QR Code. Try another code."
+      },
+      "game3": {
+        "title": "Game 3 - Image Search",
+        "subtitle": "Find the hidden detail",
+        "question": "What is the name of this furniture?",
+        "placeholder": "Enter the furniture name",
+        "correct": "Well done! That's the correct answer.",
+        "incorrect": "That's not the right name. Try again."
+      },
+      "game4": {
+        "title": "Game 4 - Riddle",
+        "subtitle": "Solve the riddle",
+        "question": "I am an 18th-century furniture, who am I?",
+        "placeholder": "Enter your answer",
+        "hint": "I am usually made of wood and have drawers.",
+        "correct": "Exactly! You found it.",
+        "incorrect": "That's not the correct answer."
+      },
+      "game5": {
+        "title": "Game 5 - Quiz",
+        "subtitle": "Choose the correct answer",
+        "question": "Who is the designer of this furniture?",
+        "correct": "Correct answer!",
+        "incorrect": "Wrong answer. Try again."
+      }
+    },
+    "success": {
+      "title": "Well Done!",
+      "subtitle": "You solved all 5 puzzles!",
+      "message": "Congratulations! You have completed all the puzzles of the treasure hunt.",
+      "badge": "Champion Badge",
+      "formMessage": "You will be redirected to a form to participate in the draw and win a book on design.",
+      "formBtn": "Fill the Form",
+      "backToHub": "Back to HUB"
+    },
+    "misc": {
+      "offline": "Offline mode activated",
+      "loading": "Loading...",
+      "childHelp": "Children can be helped by an adult."
+    }
+  }
+}

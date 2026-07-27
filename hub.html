@@ -1,574 +1,281 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Super 1300 — La Chasse aux Énigmes</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
-<style>
-  :root{
-    --white:#FFFFFF;
-    --pink:#F6BACC;
-    --teal:#239DAB;
-    --cyan:#37B7C0;
-    --blue:#0D4D96;
-    --orange:#F49B2E;
-    --yellow:#FDD211;
-    --cream:#EFDAD2;
-    --magenta:#E83C6E;
-    --font-display:'Baloo 2', sans-serif;
-    --font-body:'Nunito', sans-serif;
-  }
-
-  *{box-sizing:border-box;}
-
-  html,body{
-    margin:0;
-    padding:0;
-    background:var(--cream);
-    font-family:var(--font-body);
-    color:var(--blue);
-    -webkit-tap-highlight-color:transparent;
-  }
-
-  body{
-    min-height:100vh;
-    /* subtle paper grain */
-    background-image:
-      radial-gradient(rgba(13,77,150,0.05) 1px, transparent 1px),
-      radial-gradient(rgba(13,77,150,0.04) 1px, transparent 1px);
-    background-size:24px 24px, 17px 17px;
-    background-position:0 0, 8px 8px;
-    padding-bottom:110px; /* room for fixed progress bar */
-  }
-
-  .wrap{
-    max-width:460px;
-    margin:0 auto;
-    padding:28px 18px 24px;
-  }
-
-  /* ---------- HEADER ---------- */
-  .hub-header{
-    position:relative;
-    text-align:center;
-    padding:6px 40px 22px;
-  }
-
-  .eyebrow{
-    display:inline-block;
-    font-family:var(--font-body);
-    font-weight:800;
-    font-size:11px;
-    letter-spacing:.18em;
-    text-transform:uppercase;
-    color:var(--magenta);
-    background:var(--white);
-    border:2px solid var(--magenta);
-    border-radius:999px;
-    padding:4px 14px;
-    margin-bottom:10px;
-    transform:rotate(-2deg);
-  }
-
-  .hub-title{
-    font-family:var(--font-display);
-    font-weight:800;
-    font-size:clamp(26px,7vw,34px);
-    line-height:1.1;
-    margin:0;
-    color:var(--blue);
-  }
-
-  .hub-title span{color:var(--orange);}
-
-  .dashed-rule{
-    width:120px;
-    height:0;
-    margin:16px auto 0;
-    border-top:3px dashed var(--teal);
-    opacity:.6;
-  }
-
-  .info-btn{
-    position:absolute;
-    top:6px;
-    right:8px;
-    width:38px;
-    height:38px;
-    border-radius:50%;
-    border:2px solid var(--blue);
-    background:var(--white);
-    color:var(--blue);
-    font-family:var(--font-display);
-    font-weight:700;
-    font-size:17px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    cursor:pointer;
-    box-shadow:0 3px 0 rgba(13,77,150,.25);
-  }
-  .info-btn:active{transform:translateY(2px); box-shadow:0 1px 0 rgba(13,77,150,.25);}
-  .info-btn:focus-visible, .game-card:focus-visible, .modal-close:focus-visible, .modal-cta:focus-visible{
-    outline:3px dashed var(--orange);
-    outline-offset:3px;
-  }
-
-  /* ---------- CARDS ---------- */
-  .cards{
-    display:flex;
-    flex-direction:column;
-    gap:16px;
-    margin-top:22px;
-  }
-
-  .game-card{
-    position:relative;
-    display:flex;
-    align-items:center;
-    gap:14px;
-    background:var(--white);
-    border-radius:18px;
-    padding:14px 16px;
-    text-align:left;
-    border:none;
-    width:100%;
-    cursor:pointer;
-    box-shadow:0 3px 10px rgba(13,77,150,.14);
-    transition:transform .22s ease, box-shadow .22s ease, background .3s ease;
-    overflow:hidden;
-  }
-
-  /* perforation between stub and content */
-  .game-card::before{
-    content:"";
-    position:absolute;
-    left:64px;
-    top:10px;
-    bottom:10px;
-    border-left:2px dashed rgba(13,77,150,.18);
-  }
-
-  /* paper corner peel — the signature hover moment */
-  .game-card::after{
-    content:"";
-    position:absolute;
-    top:0;
-    right:0;
-    width:26px;
-    height:26px;
-    background:linear-gradient(135deg, transparent 50%, var(--cream) 50%);
-    box-shadow:-3px 3px 6px rgba(13,77,150,0);
-    transition:width .25s ease, height .25s ease, box-shadow .25s ease;
-  }
-
-  @media (hover:hover){
-    .game-card:hover{
-      transform:translateY(-5px) rotate(-.6deg);
-      box-shadow:0 14px 22px rgba(13,77,150,.22);
-    }
-    .game-card:nth-child(even):hover{ transform:translateY(-5px) rotate(.6deg); }
-    .game-card:hover::after{
-      width:34px;
-      height:34px;
-      box-shadow:-4px 4px 8px rgba(13,77,150,.25);
-    }
-  }
-  .game-card:active{
-    transform:translateY(-1px) scale(.99);
-    box-shadow:0 4px 8px rgba(13,77,150,.18);
-  }
-
-  .stub{
-    flex:0 0 46px;
-    height:46px;
-    border-radius:50%;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-family:var(--font-display);
-    font-weight:700;
-    font-size:19px;
-    color:var(--white);
-    background:var(--teal);
-  }
-  .game-card:nth-child(1) .stub{background:var(--teal);}
-  .game-card:nth-child(2) .stub{background:var(--cyan);}
-  .game-card:nth-child(3) .stub{background:var(--orange);}
-  .game-card:nth-child(4) .stub{background:var(--blue);}
-  .game-card:nth-child(5) .stub{background:var(--magenta);}
-
-  .card-body{flex:1; min-width:0;}
-  .card-title{
-    font-family:var(--font-display);
-    font-weight:700;
-    font-size:16px;
-    margin:0 0 2px;
-    color:var(--blue);
-    white-space:nowrap;
-    overflow:hidden;
-    text-overflow:ellipsis;
-  }
-  .card-sub{
-    font-size:12.5px;
-    font-weight:600;
-    color:rgba(13,77,150,.62);
-    margin:0;
-  }
-
-  .status{
-    flex:0 0 30px;
-    height:30px;
-    border-radius:50%;
-    border:2.5px solid rgba(13,77,150,.28);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    transition:all .3s ease;
-  }
-  .status svg{width:15px;height:15px;opacity:0;transform:scale(.5);transition:all .25s ease;}
-
-  /* solved state */
-  .game-card.done{
-    background:linear-gradient(0deg, rgba(253,210,17,.16), rgba(253,210,17,.16)), var(--white);
-  }
-  .game-card.done .status{
-    background:var(--magenta);
-    border-color:var(--magenta);
-    animation:stamp .35s ease;
-  }
-  .game-card.done .status svg{opacity:1;transform:scale(1);}
-  .game-card.done .status svg path{stroke:var(--white);}
-
-  @keyframes stamp{
-    0%{transform:scale(.4) rotate(-18deg);}
-    60%{transform:scale(1.15) rotate(4deg);}
-    100%{transform:scale(1) rotate(0);}
-  }
-
-  /* ---------- PROGRESS BAR (fixed bottom) ---------- */
-  .progress-bar{
-    position:fixed;
-    left:0; right:0; bottom:0;
-    background:var(--white);
-    padding:12px 18px calc(12px + env(safe-area-inset-bottom));
-    box-shadow:0 -4px 14px rgba(13,77,150,.14);
-    z-index:20;
-  }
-  .progress-inner{max-width:460px; margin:0 auto;}
-  .progress-label{
-    display:flex;
-    justify-content:space-between;
-    align-items:baseline;
-    font-family:var(--font-display);
-    font-weight:700;
-    font-size:13px;
-    color:var(--blue);
-    margin-bottom:7px;
-  }
-  .progress-label b{color:var(--magenta); font-size:15px;}
-  .progress-track{
-    position:relative;
-    height:14px;
-    border-radius:999px;
-    background:var(--cream);
-    overflow:hidden;
-    border:1.5px solid rgba(13,77,150,.15);
-  }
-  .progress-fill{
-    height:100%;
-    width:0%;
-    border-radius:999px;
-    background:linear-gradient(90deg, var(--pink), var(--cyan) 45%, var(--blue) 100%);
-    transition:width .5s cubic-bezier(.4,1.4,.5,1);
-  }
-
-  /* ---------- MODAL ---------- */
-  .modal-overlay{
-    position:fixed; inset:0;
-    background:rgba(13,77,150,.55);
-    backdrop-filter:blur(2px);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    padding:22px;
-    z-index:50;
-    opacity:0;
-    pointer-events:none;
-    transition:opacity .25s ease;
-  }
-  .modal-overlay.open{opacity:1; pointer-events:auto;}
-
-  .modal-box{
-    background:var(--white);
-    max-width:380px;
-    width:100%;
-    border-radius:20px;
-    padding:30px 26px 26px;
-    position:relative;
-    text-align:center;
-    transform:translateY(14px) scale(.97);
-    transition:transform .3s ease;
-    box-shadow:0 20px 40px rgba(13,77,150,.35);
-    clip-path:polygon(
-      0% 6px, 4% 0%, 9% 5px, 14% 0%, 19% 5px, 24% 0%, 29% 5px, 34% 0%, 39% 5px, 44% 0%,
-      49% 5px, 54% 0%, 59% 5px, 64% 0%, 69% 5px, 74% 0%, 79% 5px, 84% 0%, 89% 5px, 94% 0%, 100% 6px,
-      100% 100%, 0% 100%
-    );
-  }
-  .modal-overlay.open .modal-box{transform:translateY(0) scale(1);}
-
-  .modal-emoji{font-size:38px; margin-bottom:6px;}
-  .modal-title{
-    font-family:var(--font-display);
-    font-weight:800;
-    font-size:22px;
-    color:var(--blue);
-    margin:0 0 10px;
-  }
-  .modal-text{
-    font-size:14.5px;
-    line-height:1.55;
-    color:rgba(13,77,150,.85);
-    margin:0 0 22px;
-  }
-  .modal-cta{
-    font-family:var(--font-display);
-    font-weight:700;
-    font-size:15px;
-    color:var(--white);
-    background:linear-gradient(135deg, var(--orange), var(--magenta));
-    border:none;
-    border-radius:999px;
-    padding:13px 30px;
-    cursor:pointer;
-    box-shadow:0 6px 0 rgba(232,60,110,.35);
-  }
-  .modal-cta:active{transform:translateY(3px); box-shadow:0 2px 0 rgba(232,60,110,.35);}
-
-  .modal-close{
-    position:absolute;
-    top:14px; right:14px;
-    width:30px; height:30px;
-    border-radius:50%;
-    border:none;
-    background:var(--cream);
-    color:var(--blue);
-    font-size:16px;
-    font-weight:700;
-    cursor:pointer;
-    line-height:1;
-  }
-
-  /* Reset Button Styles */
-  .reset-btn-container {
-    text-align: center;
-    margin-top: 15px;
-  }
-  .reset-btn {
-    font-family: var(--font-body);
-    font-weight: 700;
-    font-size: 11px;
-    color: rgba(13,77,150,0.5);
-    background: transparent;
-    border: 1px solid rgba(13,77,150,0.2);
-    border-radius: 999px;
-    padding: 6px 14px;
-    cursor: pointer;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    transition: all 0.2s;
-  }
-  .reset-btn:active {
-    background: rgba(13,77,150,0.05);
-    color: var(--blue);
-  }
-
-  /* Toast Notification */
-  .toast {
-    position: fixed;
-    top: 20px;
-    left: 50%;
-    transform: translateX(-50%) translateY(-20px);
-    background: var(--teal);
-    color: var(--white);
-    font-family: var(--font-display);
-    font-weight: 700;
-    font-size: 14px;
-    padding: 10px 24px;
-    border-radius: 999px;
-    box-shadow: 0 4px 12px rgba(13,77,150,.2);
-    z-index: 100;
-    opacity: 0;
-    transition: transform 0.3s, opacity 0.3s;
-    pointer-events: none;
-  }
-  .toast.show {
-    transform: translateX(-50%) translateY(0);
-    opacity: 1;
-  }
-
-  @media (prefers-reduced-motion: reduce){
-    *{animation:none !important; transition:none !important;}
-  }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>JDPM - Chasse aux Énigmes</title>
+  
+  <!-- Manifest PWA -->
+  <link rel="manifest" href="/manifest.json">
+  
+  <!-- Préchargement des assets critiques -->
+  <link rel="preload" href="css/_variables.css" as="style">
+  <link rel="preload" href="css/base.css" as="style">
+  <link rel="preload" href="css/hub.css" as="style">
+  <link rel="preload" href="js/state.js" as="script">
+  <link rel="preload" href="js/utils.js" as="script">
+  <link rel="preload" href="js/translations.js" as="script">
+  
+  <!-- Styles -->
+  <link rel="stylesheet" href="css/_variables.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/hub.css">
+  
+  <!-- Polices -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
+  <!-- Sélecteur de langue -->
+  <div class="lang-selector" id="langSelector"></div>
 
-<div class="wrap">
-
-  <header class="hub-header">
-    <button class="info-btn" id="infoBtn" aria-label="Informations sur le jeu">ⓘ</button>
-    <span class="eyebrow">Chasse aux énigmes</span>
-    <h1 class="hub-title">Super <span>1300</span></h1>
-    <div class="dashed-rule"></div>
-  </header>
-
-  <!-- Container of games -->
-  <main class="cards" id="cardsContainer"></main>
-
-  <!-- Reset progress button -->
-  <div class="reset-btn-container">
-    <button class="reset-btn" id="resetBtn">Réinitialiser le jeu</button>
+  <!-- Message hors ligne -->
+  <div id="offline-message" style="display: none; position: fixed; top: 0; left: 0; right: 0; background: #E83C6E; color: white; padding: 10px; text-align: center; z-index: 1000;">
+    ⚠️ <span id="offlineText">Mode hors ligne activé</span>
   </div>
 
-</div>
+  <!-- Indication discrète de la page actuelle -->
+  <div class="page-indicator" id="pageIndicator">Page: HUB</div>
 
-<div class="progress-bar">
-  <div class="progress-inner">
-    <div class="progress-label">
-      <span>Progression</span>
-      <span><b id="progressCount">0</b>/5 énigmes résolues</span>
+  <div class="hub-wrap">
+    <header class="hub-header">
+      <span class="eyebrow" id="hubSubtitle">Chasse aux énigmes</span>
+      <h1 class="hub-title" id="hubTitle">Super <span>1300</span></h1>
+      <div class="dashed-rule"></div>
+      <p class="prize-message" id="prizeMessage">Gagnez un livre sur le design !</p>
+    </header>
+
+    <!-- Section d'introduction (remplace le QR code) -->
+    <section class="intro-section">
+      <h2 class="intro-title" id="introTitle">Choisissez une énigme</h2>
+      <p class="intro-subtitle" id="introSubtitle">Touchez une carte ci-dessous pour commencer</p>
+    </section>
+
+    <!-- Cartes des jeux -->
+    <main class="cards" id="cardsContainer"></main>
+
+    <!-- Bouton de réinitialisation -->
+    <div class="reset-btn-container">
+      <button class="reset-btn" id="resetBtn">Réinitialiser le jeu</button>
     </div>
-    <div class="progress-track">
-      <div class="progress-fill" id="progressFill"></div>
+  </div>
+
+  <!-- Barre de progression -->
+  <div class="progress-bar">
+    <div class="progress-inner">
+      <div class="progress-label">
+        <span id="progressLabel">Progression</span>
+        <span><b id="progressCount">0</b> <span id="progressOf">/</span>5 <span id="progressEnigmas">énigmes résolues</span></span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
     </div>
   </div>
-</div>
 
-<div class="modal-overlay" id="modalOverlay">
-  <div class="modal-box">
-    <button class="modal-close" id="modalClose" aria-label="Fermer">✕</button>
-    <div class="modal-emoji">🗺️</div>
-    <h2 class="modal-title">Bienvenue, explorateur·ice !</h2>
-    <p class="modal-text">
-      5 énigmes t'attendent sur le chemin. Résous-les une par une pour
-      remplir la jauge en bas de l'écran et débloquer le trésor final.
-      Touche une carte pour démarrer une énigme.
-    </p>
-    <button class="modal-cta" id="modalCta">C'est parti !</button>
+  <!-- Modal d'introduction -->
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal-box">
+      <button class="modal-close" id="modalClose" aria-label="Fermer">✕</button>
+      <div class="modal-emoji">🏭</div>
+      <h2 class="modal-title" id="modalTitle">Bienvenue, explorateur·ice !</h2>
+      <p class="modal-text" id="modalText">
+        5 énigmes t'attendent sur le chemin. Résous-les une par une pour remplir la jauge en bas de l'écran et débloquer le trésor final. Touche une carte pour démarrer une énigme.
+      </p>
+      <button class="modal-cta" id="modalCta">C'est parti !</button>
+    </div>
   </div>
-</div>
 
-<div class="toast" id="toast">Énigme résolue ! 🎉</div>
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
 
-<!-- State global -->
-<script src="state_jdpm.js"></script>
-<script>
-  // ---- Données des 5 jeux ----
-  const games = [
-    { id:1, title:"L'Énigme du Sceau",     sub:"Décode le message caché",        emoji:"🗝️", href:"jeu1.html" },
-    { id:2, title:"La Piste Secrète",      sub:"Suis les indices semés",         emoji:"🧭", href:"jeu2.html" },
-    { id:3, title:"Le Code Oublié",        sub:"Assemble les chiffres perdus",   emoji:"🔍", href:"jeu3.html" },
-    { id:4, title:"Le Portrait Mystère",   sub:"Reconnais le visage caché",      emoji:"🖼️", href:"jeu4.html" },
-    { id:5, title:"Le Trésor Final",       sub:"Ouvre le coffre au bout du chemin", emoji:"🏆", href:"jeu5.html" },
-  ];
+  <!-- Scripts -->
+  <script src="js/state.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/translations.js"></script>
+  <script src="js/i18n-utils.js"></script>
+  
+  <!-- Scripts spécifiques au HUB -->
+  <script>
+    // ==========================================
+    // Données des 5 jeux
+    // ==========================================
+    const games = [
+      { id: 1, title: "Jeu 1 - Réalité Augmentée", sub: "Décodez le message caché", emoji: "🔍", href: "game-1.html" },
+      { id: 2, title: "Jeu 2 - NFC/QR Code", sub: "Scannez le code pour continuer", emoji: "📱", href: "game-2.html" },
+      { id: 3, title: "Jeu 3 - Recherche d'image", sub: "Trouvez le détail caché", emoji: "🖼️", href: "game-3.html" },
+      { id: 4, title: "Jeu 4 - Énigme", sub: "Résolvez l'énigme", emoji: "🤔", href: "game-4.html" },
+      { id: 5, title: "Jeu 5 - QCM", sub: "Choisissez la bonne réponse", emoji: "🎯", href: "game-5.html" },
+    ];
 
-  const checkSvg = `<svg viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+    const checkSvg = `<svg viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 
-  const container = document.getElementById('cardsContainer');
+    const container = document.getElementById('cardsContainer');
 
-  function render(){
-    const state = loadJdpmState();
-    container.innerHTML = '';
-    games.forEach(g => {
-      const isDone = state[`game_${g.id}_done`];
-      const card = document.createElement('button');
-      card.className = 'game-card' + (isDone ? ' done' : '');
-      card.setAttribute('role','button');
-      card.setAttribute('aria-pressed', isDone);
-      card.innerHTML = `
-        <div class="stub">${isDone ? '✓' : g.id}</div>
-        <div class="card-body">
-          <p class="card-title">${g.emoji} ${g.title}</p>
-          <p class="card-sub">${isDone ? 'Résolue — bravo !' : g.sub}</p>
-        </div>
-        <div class="status">${checkSvg}</div>
-      `;
+    // ==========================================
+    // Rendre les cartes des jeux
+    // ==========================================
+    function renderCards() {
+      const state = loadJdpmState();
+      container.innerHTML = '';
+      games.forEach(g => {
+        const isDone = state[`game_${g.id}_done`];
+        const card = document.createElement('button');
+        card.className = 'game-card' + (isDone ? ' done' : '');
+        card.setAttribute('role', 'button');
+        card.setAttribute('aria-pressed', isDone);
+        card.innerHTML = `
+          <div class="stub">${isDone ? '✓' : g.id}</div>
+          <div class="card-body">
+            <p class="card-title">${g.emoji} ${g.title}</p>
+            <p class="card-sub">${isDone ? 'Résolue – bravo !' : g.sub}</p>
+          </div>
+          <div class="status">${checkSvg}</div>
+        `;
 
-      card.addEventListener('click', () => {
-        // Redirection vers l'énigme
-        window.location.href = g.href;
+        card.addEventListener('click', () => {
+          window.location.href = g.href;
+        });
+        container.appendChild(card);
       });
-      container.appendChild(card);
-    });
-  }
-
-  function updateProgress(){
-    const state = loadJdpmState();
-    const doneCount = games.filter(g => state[`game_${g.id}_done`]).length;
-    document.getElementById('progressCount').textContent = doneCount;
-    document.getElementById('progressFill').style.width = (doneCount / games.length * 100) + '%';
-  }
-
-  // ---- Modal ----
-  const overlay = document.getElementById('modalOverlay');
-  function openModal(){ overlay.classList.add('open'); }
-  function closeModal(){ overlay.classList.remove('open'); }
-
-  document.getElementById('infoBtn').addEventListener('click', openModal);
-  document.getElementById('modalClose').addEventListener('click', closeModal);
-  document.getElementById('modalCta').addEventListener('click', closeModal);
-  overlay.addEventListener('click', e => { if (e.target === overlay) closeModal(); });
-  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
-
-  // ---- Reset Button ----
-  document.getElementById('resetBtn').addEventListener('click', () => {
-    if (confirm("Réinitialiser toute ta progression ? Toutes les énigmes résolues seront perdues.")) {
-      resetJdpmState();
-      render();
-      updateProgress();
-      showToast("Progression réinitialisée !");
     }
-  });
 
-  // ---- Toast ----
-  function showToast(msg) {
-    const toast = document.getElementById('toast');
-    toast.textContent = msg;
-    toast.classList.add('show');
-    setTimeout(() => toast.classList.remove('show'), 3000);
-  }
+    // ==========================================
+    // Mettre à jour la barre de progression
+    // ==========================================
+    function updateProgress() {
+      const state = loadJdpmState();
+      const doneCount = games.filter(g => state[`game_${g.id}_done`]).length;
+      document.getElementById('progressCount').textContent = doneCount;
+      document.getElementById('progressFill').style.width = (doneCount / games.length * 100) + '%';
+    }
 
-  // ---- Check URL Params ----
-  function checkUrlParams() {
-    const params = new URLSearchParams(window.location.search);
-    const winParam = params.get('win');
-    if (winParam) {
-      const gameId = parseInt(winParam);
-      if (gameId >= 1 && gameId <= 5) {
-        markJdpmGameDone(gameId);
-        showToast(`Bravo ! Énigme ${gameId} résolue ! 🎉`);
-        // Clean URL params
-        history.replaceState(null, '', window.location.pathname);
+    // ==========================================
+    // Modal d'introduction
+    // ==========================================
+    const overlay = document.getElementById('modalOverlay');
+    function openModal() { overlay.classList.add('open'); }
+    function closeModal() { overlay.classList.remove('open'); }
+
+    document.getElementById('modalClose').addEventListener('click', closeModal);
+    document.getElementById('modalCta').addEventListener('click', closeModal);
+    overlay.addEventListener('click', e => { if (e.target === overlay) closeModal(); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+    // ==========================================
+    // Bouton de réinitialisation
+    // ==========================================
+    document.getElementById('resetBtn').addEventListener('click', () => {
+      if (confirm("Réinitialiser toute ta progression ? Toutes les énigmes résolues seront perdues.")) {
+        resetJdpmState();
+        renderCards();
+        updateProgress();
+        showToast("Progression réinitialisée !");
+      }
+    });
+
+    // ==========================================
+    // Toast Notification
+    // ==========================================
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 3000);
+    }
+
+    // ==========================================
+    // Vérifier les paramètres URL
+    // ==========================================
+    function checkUrlParams() {
+      const params = new URLSearchParams(window.location.search);
+      const winParam = params.get('win');
+      if (winParam) {
+        const gameId = parseInt(winParam);
+        if (gameId >= 1 && gameId <= 5) {
+          markJdpmGameDone(gameId);
+          showToast(`Bravo ! Énigme ${gameId} résolue ! 🎉`);
+          history.replaceState(null, '', window.location.pathname);
+        }
       }
     }
-  }
 
-  // ---- Initialize ----
-  checkUrlParams();
-  render();
-  updateProgress();
+    // ==========================================
+    // Initialisation
+    // ==========================================
+    async function initHub() {
+      // Initialiser les traductions
+      await initializeLanguage();
+      updateTranslations();
 
-  // Open introductory modal on first visit
-  if (!localStorage.getItem('jdpm_visited')) {
-    localStorage.setItem('jdpm_visited', 'true');
-    window.addEventListener('load', () => setTimeout(openModal, 300));
-  }
-</script>
+      // Enregistrer le Service Worker
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/js/service-worker.js')
+          .then((registration) => {
+            console.log('✅ Service Worker enregistré:', registration.scope);
+          })
+          .catch((error) => {
+            console.error('❌ Erreur Service Worker:', error);
+          });
+      }
 
+      // Détection du mode hors ligne
+      function checkOnlineStatus() {
+        const isOnline = navigator.onLine;
+        const offlineMessage = document.getElementById('offline-message');
+        if (!isOnline && offlineMessage) {
+          offlineMessage.style.display = 'block';
+        } else if (offlineMessage) {
+          offlineMessage.style.display = 'none';
+        }
+      }
+      window.addEventListener('online', checkOnlineStatus);
+      window.addEventListener('offline', checkOnlineStatus);
+      checkOnlineStatus();
+
+      // Vérifier les paramètres URL
+      checkUrlParams();
+
+      // Rendre les cartes et mettre à jour la progression
+      renderCards();
+      updateProgress();
+
+      // Ouvrir la modal d'introduction au premier chargement
+      if (!localStorage.getItem('jdpm_visited')) {
+        localStorage.setItem('jdpm_visited', 'true');
+        window.addEventListener('load', () => setTimeout(openModal, 300));
+      }
+    }
+
+    // ==========================================
+    // Mettre à jour les traductions
+    // ==========================================
+    function updateTranslations() {
+      const lang = getCurrentLanguage();
+      
+      // Mettre à jour les textes
+      document.getElementById('hubTitle').innerHTML = translate('hub.title').replace('Super', 'Super <span>1300</span>');
+      document.getElementById('hubSubtitle').textContent = translate('hub.subtitle');
+      document.getElementById('prizeMessage').textContent = translate('hub.prize');
+      document.getElementById('introTitle').textContent = translate('hub.startBtn');
+      document.getElementById('introSubtitle').textContent = "Touchez une carte ci-dessous pour commencer";
+      document.getElementById('progressLabel').textContent = translate('hub.progress');
+      document.getElementById('progressOf').textContent = translate('hub.of');
+      document.getElementById('progressEnigmas').textContent = translate('hub.enigmasSolved');
+      document.getElementById('resetBtn').textContent = translate('hub.resetBtn');
+      document.getElementById('modalTitle').textContent = translate('modals.welcome.title');
+      document.getElementById('modalText').textContent = translate('modals.welcome.text');
+      document.getElementById('modalCta').textContent = translate('modals.welcome.cta');
+      document.getElementById('offlineText').textContent = translate('misc.offline');
+      document.getElementById('pageIndicator').textContent = `Page: ${translate('hub.title').split(' - ')[0] || 'HUB'}`;
+    }
+
+    // Écouter les changements de langue
+    window.addEventListener('languageChanged', updateTranslations);
+
+    // Initialiser au chargement
+    document.addEventListener('DOMContentLoaded', initHub);
+  </script>
 </body>
 </html>

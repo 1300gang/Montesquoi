@@ -1,0 +1,102 @@
+{
+  "language": "fr",
+  "name": "Français",
+  "flag": "🇫🇷",
+  "direction": "ltr",
+  "translations": {
+    "hub": {
+      "title": "Journées du Patrimoine et Matrimoine",
+      "subtitle": "Chasse aux énigmes au MAD",
+      "startBtn": "Commencer l'aventure",
+      "progress": "Progression",
+      "of": "sur",
+      "enigmasSolved": "énigmes résolues",
+      "prize": "Gagnez un livre sur le design !",
+      "resetBtn": "Réinitialiser le jeu"
+    },
+    "buttons": {
+      "backToHub": "Retour au HUB",
+      "info": "Info",
+      "validate": "Valider",
+      "cancel": "Annuler",
+      "hint": "Indice",
+      "next": "Suivant",
+      "retry": "Réessayer"
+    },
+    "modals": {
+      "welcome": {
+        "title": "Bienvenue, explorateur·ice !",
+        "text": "5 énigmes t'attendent sur le chemin. Résous-les une par une pour remplir la jauge en bas de l'écran et débloquer le trésor final. Touche une carte pour démarrer une énigme.",
+        "cta": "C'est parti !"
+      },
+      "success": {
+        "title": "Félicitations !",
+        "text": "Vous avez résolu cette énigme !",
+        "cta": "Retour au HUB"
+      },
+      "error": {
+        "title": "Erreur",
+        "text": "Ce n'est pas la bonne réponse. Essayez encore !",
+        "cta": "OK"
+      }
+    },
+    "games": {
+      "game1": {
+        "title": "Jeu 1 - Réalité Augmentée",
+        "subtitle": "Scannez la cible",
+        "instructions": "Pointez la caméra vers la cible imprimée pour révéler l'indice.",
+        "targetFound": "Cible détectée !",
+        "targetLost": "Cible perdue",
+        "correct": "Bravo ! Vous avez résolu l'énigme.",
+        "placeholder": "Saisissez la réponse…"
+      },
+      "game2": {
+        "title": "Jeu 2 - NFC/QR Code",
+        "subtitle": "Scannez le code pour continuer",
+        "instructions": "Approchez votre appareil du tag NFC ou scannez le QR code.",
+        "qrModalTitle": "Scanner un QR Code",
+        "qrModalInstructions": "Pointez la caméra vers le QR code.",
+        "qrSuccess": "QR Code valide !",
+        "qrError": "QR Code invalide. Essayez un autre code."
+      },
+      "game3": {
+        "title": "Jeu 3 - Recherche d'image",
+        "subtitle": "Trouvez le détail caché",
+        "question": "Quel est le nom de ce meuble ?",
+        "placeholder": "Saisissez le nom du meuble",
+        "correct": "Bravo ! C'est la bonne réponse.",
+        "incorrect": "Ce n'est pas le bon nom. Essayez encore."
+      },
+      "game4": {
+        "title": "Jeu 4 - Énigme",
+        "subtitle": "Résolvez l'énigme",
+        "question": "Je suis un meuble du XVIIIe siècle, qui suis-je ?",
+        "placeholder": "Saisissez votre réponse",
+        "hint": "Je suis souvent en bois et j'ai des tiroirs.",
+        "correct": "Exact ! Vous avez trouvé.",
+        "incorrect": "Ce n'est pas la bonne réponse."
+      },
+      "game5": {
+        "title": "Jeu 5 - QCM",
+        "subtitle": "Choisissez la bonne réponse",
+        "question": "Quel est le designer de ce meuble ?",
+        "correct": "Bonne réponse !",
+        "incorrect": "Mauvaise réponse. Essayez encore."
+      }
+    },
+    "success": {
+      "title": "Bravo !",
+      "subtitle": "Vous avez résolu les 5 énigmes !",
+      "message": "Félicitations ! Vous avez complété toutes les énigmes de la chasse au trésor.",
+      "badge": "Badge du Champion",
+      "formMessage": "Vous allez être redirigé vers un formulaire pour participer au tirage au sort et gagner un livre sur le design.",
+      "formBtn": "Remplir le formulaire",
+      "backToHub": "Retour au HUB"
+    },
+    "misc": {
+      "offline": "Mode hors ligne activé",
+      "loading": "Chargement en cours...",
+      "childHelp": "Les enfants peuvent être aidés par un adulte."
+    }
+  }
+}

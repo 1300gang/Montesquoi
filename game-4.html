@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Jeu 4 - JDPM</title>
+  
+  <!-- Manifest PWA -->
+  <link rel="manifest" href="/manifest.json">
+  
+  <!-- Préchargement des assets critiques -->
+  <link rel="preload" href="css/_variables.css" as="style">
+  <link rel="preload" href="css/base.css" as="style">
+  <link rel="preload" href="css/game-base.css" as="style">
+  <link rel="preload" href="css/game-4.css" as="style">
+  <link rel="preload" href="js/state.js" as="script">
+  <link rel="preload" href="js/utils.js" as="script">
+  <link rel="preload" href="js/translations.js" as="script">
+  
+  <!-- Styles -->
+  <link rel="stylesheet" href="css/_variables.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/game-base.css">
+  <link rel="stylesheet" href="css/game-4.css">
+  
+  <!-- Polices -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Style pour l'indicateur de page -->
+  <style>
+    .page-indicator {
+      position: fixed;
+      bottom: 80px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(13, 77, 150, 0.1);
+      color: var(--blue);
+      font-family: var(--font-body);
+      font-size: 11px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      z-index: 10;
+      opacity: 0.7;
+    }
+    @media (max-width: 480px) {
+      .page-indicator {
+        bottom: 70px;
+        font-size: 10px;
+        padding: 3px 8px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Message hors ligne -->
+  <div id="offline-message" style="display: none; position: fixed; top: 0; left: 0; right: 0; background: #E83C6E; color: white; padding: 10px; text-align: center; z-index: 1000;">
+    ⚠️ <span id="offlineText">Mode hors ligne activé</span>
+  </div>
+
+  <!-- Indication discrète de la page actuelle -->
+  <div class="page-indicator" id="pageIndicator">Page: Jeu 4</div>
+
+  <div class="container">
+    <div class="game-container">
+      <header class="game-header">
+        <a href="hub.html" class="back-btn" id="backBtn">← HUB</a>
+        <h1 class="game-title" id="gameTitle">Jeu 4 - Énigme</h1>
+        <button class="info-btn" id="infoBtn">ⓘ</button>
+      </header>
+
+      <main>
+        <section class="riddle-section">
+          <p class="riddle-text" id="riddleQuestion">
+            Je suis un meuble du XVIIIème siècle, qui suis-je ?
+          </p>
+        </section>
+
+        <section class="hint-section" id="hint-section">
+          <p class="hint-text" id="hintText">
+            Je suis souvent en bois et j'ai des tiroirs.
+          </p>
+        </section>
+
+        <section class="answer-section">
+          <input
+            type="text"
+            id="answer-input"
+            class="answer-input"
+            placeholder="Saisissez votre réponse"
+            autocomplete="off"
+            autocorrect="off"
+            autocapitalize="words"
+            spellcheck="false"
+            enterkeyhint="done"
+          >
+          <div class="buttons-section">
+            <button id="validate-btn" class="validate-btn">Valider</button>
+            <button id="hint-btn" class="hint-btn">Indice</button>
+          </div>
+          <p id="feedback" class="feedback"></p>
+        </section>
+      </main>
+
+      <footer class="game-footer">
+        <!-- Vide pour ce jeu -->
+      </footer>
+    </div>
+  </div>
+
+  <!-- Écran de victoire -->
+  <div id="win-screen">
+    <div class="win-icon">🎉</div>
+    <h2 class="win-title" id="winTitle">Félicitations !</h2>
+    <p class="win-sub" id="winSub">Exact ! Vous avez trouvé.</p>
+    <a href="hub.html?win=4" id="btn-hub">Retour au HUB</a>
+  </div>
+
+  <!-- Modal Info -->
+  <div id="info-modal">
+    <div class="modal-box">
+      <button class="modal-close" id="infoModalClose" aria-label="Fermer">✕</button>
+      <div class="modal-emoji">🤔</div>
+      <h2 class="modal-title" id="infoModalTitle">Jeu 4 - Énigme</h2>
+      <p class="modal-text" id="infoModalInstructions">
+        Résolvez l'énigme en saisissant la bonne réponse. Vous pouvez utiliser le bouton "Indice" si vous êtes bloqué.
+      </p>
+      <button class="modal-cta" id="infoModalCta">OK</button>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/state.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/translations.js"></script>
+  <script src="js/i18n-utils.js"></script>
+  
+  <script>
+    // ==========================================
+    // CONFIGURATION
+    // ==========================================
+    const CORRECT_ANSWER = 'Commode'; // Réponse correcte
+    let gameWon = false;
+    let hintUsed = false;
+
+    // ==========================================
+    // INITIALISATION
+    // ==========================================
+    async function updatePageTranslations() {
+      await initializeLanguage();
+      
+      // Mettre à jour les textes
+      document.getElementById('backBtn').textContent = translate('buttons.backToHub');
+      document.getElementById('gameTitle').textContent = translate('games.game4.title');
+      document.getElementById('riddleQuestion').textContent = translate('games.game4.question');
+      document.getElementById('hintText').textContent = translate('games.game4.hint');
+      document.getElementById('answer-input').placeholder = translate('games.game4.placeholder');
+      document.getElementById('validate-btn').textContent = translate('buttons.validate');
+      document.getElementById('hint-btn').textContent = translate('buttons.hint');
+      document.getElementById('winTitle').textContent = translate('modals.success.title');
+      document.getElementById('winSub').textContent = translate('games.game4.correct');
+      document.getElementById('btn-hub').textContent = translate('buttons.backToHub');
+      document.getElementById('infoModalTitle').textContent = translate('games.game4.title');
+      document.getElementById('infoModalInstructions').textContent = translate('games.game4.instructions');
+      document.getElementById('infoModalCta').textContent = translate('modals.welcome.cta');
+      document.getElementById('offlineText').textContent = translate('misc.offline');
+      document.getElementById('pageIndicator').textContent = `Page: ${translate('games.game4.title').split(' - ')[0] || 'Jeu 4'}`;
+    }
+
+    // Écouter les changements de langue
+    window.addEventListener('languageChanged', updatePageTranslations);
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      await updatePageTranslations();
+
+      // Enregistrer le Service Worker
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/js/service-worker.js');
+      }
+
+      // Détection du mode hors ligne
+      function checkOnlineStatus() {
+        const isOnline = navigator.onLine;
+        const offlineMessage = document.getElementById('offline-message');
+        if (!isOnline && offlineMessage) {
+          offlineMessage.style.display = 'block';
+        } else if (offlineMessage) {
+          offlineMessage.style.display = 'none';
+        }
+      }
+      window.addEventListener('online', checkOnlineStatus);
+      window.addEventListener('offline', checkOnlineStatus);
+      checkOnlineStatus();
+      
+      // Vérifier si le jeu est déjà terminé
+      const state = loadJdpmState();
+      if (state.game_4_done) {
+        gameWon = true;
+        showWinScreen();
+      }
+    });
+
+    // ==========================================
+    // GESTION DE L'INDICE
+    // ==========================================
+    const hintSection = document.getElementById('hint-section');
+    const hintBtn = document.getElementById('hint-btn');
+
+    function showHint() {
+      if (hintUsed) return;
+      hintUsed = true;
+      hintSection.classList.add('show');
+      hintBtn.classList.add('hidden');
+    }
+
+    // ==========================================
+    // VALIDATION
+    // ==========================================
+    const answerInput = document.getElementById('answer-input');
+    const validateBtn = document.getElementById('validate-btn');
+    const feedback = document.getElementById('feedback');
+
+    // Normaliser la réponse (insensible à la casse et aux accents)
+    function normalizeAnswer(answer) {
+      return answer
+        .trim()
+        .toUpperCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '');
+    }
+
+    function validateAnswer() {
+      const userAnswer = normalizeAnswer(answerInput.value);
+      const correctAnswer = normalizeAnswer(CORRECT_ANSWER);
+
+      if (!userAnswer) {
+        showFeedback(translate('modals.error.text'), true);
+        triggerShake();
+        return;
+      }
+
+      if (userAnswer === correctAnswer) {
+        onSuccess();
+      } else {
+        showFeedback(translate('games.game4.incorrect'), true);
+        triggerShake();
+      }
+    }
+
+    function showFeedback(msg, isError) {
+      feedback.textContent = msg;
+      feedback.className = 'feedback show ' + (isError ? 'error' : 'success');
+
+      // Réinitialiser le feedback après 3 secondes
+      setTimeout(() => {
+        feedback.className = 'feedback';
+      }, 3000);
+    }
+
+    function triggerShake() {
+      answerInput.classList.remove('error');
+      void answerInput.offsetWidth; // Force le reflow
+      answerInput.classList.add('error');
+      setTimeout(() => {
+        answerInput.classList.remove('error');
+      }, 400);
+    }
+
+    // ==========================================
+    // VICTOIRE
+    // ==========================================
+    function onSuccess() {
+      if (gameWon) return;
+      gameWon = true;
+      markJdpmGameDone(4);
+      showWinScreen();
+    }
+
+    function showWinScreen() {
+      document.getElementById('win-screen').classList.add('show');
+    }
+
+    // ==========================================
+    // ÉVÉNEMENTS
+    // ==========================================
+    validateBtn.addEventListener('click', validateAnswer);
+    hintBtn.addEventListener('click', showHint);
+    
+    answerInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        validateAnswer();
+      }
+    });
+
+    // ==========================================
+    // MODAL INFO
+    // ==========================================
+    const infoModal = document.getElementById('info-modal');
+    function openInfoModal() { infoModal.classList.add('open'); }
+    function closeInfoModal() { infoModal.classList.remove('open'); }
+
+    document.getElementById('infoBtn').addEventListener('click', openInfoModal);
+    document.getElementById('infoModalClose').addEventListener('click', closeInfoModal);
+    document.getElementById('infoModalCta').addEventListener('click', closeInfoModal);
+    infoModal.addEventListener('click', e => { if (e.target === infoModal) closeInfoModal(); });
+  </script>
+</body>
+</html>

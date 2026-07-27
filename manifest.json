@@ -1,0 +1,23 @@
+{
+  "name": "JDPM - Chasse aux Énigmes",
+  "short_name": "JDPM",
+  "description": "Journées du Patrimoine et Matrimoine - Chasse aux énigmes au MAD",
+  "start_url": "/hub.html",
+  "display": "standalone",
+  "background_color": "#EFDAD2",
+  "theme_color": "#0D4D96",
+  "icons": [
+    {
+      "src": "image/icons/icon-72x72.svg",
+      "sizes": "72x72",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "image/icons/icon-512x512.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

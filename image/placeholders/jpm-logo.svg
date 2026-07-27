@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="100" viewBox="0 0 200 100">
+  <rect width="200" height="100" fill="#EFDAD2" stroke="#F49B2E" stroke-width="2"/>
+  <text x="100" y="55" font-family="Arial, sans-serif" font-size="14" font-weight="bold" text-anchor="middle" fill="#F49B2E">JOURNÉES</text>
+  <text x="100" y="70" font-family="Arial, sans-serif" font-size="14" font-weight="bold" text-anchor="middle" fill="#F49B2E">PATRIMOINE</text>
+</svg>

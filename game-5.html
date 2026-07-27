@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Jeu 5 - JDPM</title>
+  
+  <!-- Manifest PWA -->
+  <link rel="manifest" href="/manifest.json">
+  
+  <!-- Préchargement des assets critiques -->
+  <link rel="preload" href="css/_variables.css" as="style">
+  <link rel="preload" href="css/base.css" as="style">
+  <link rel="preload" href="css/game-base.css" as="style">
+  <link rel="preload" href="css/game-5.css" as="style">
+  <link rel="preload" href="js/state.js" as="script">
+  <link rel="preload" href="js/utils.js" as="script">
+  <link rel="preload" href="js/translations.js" as="script">
+  
+  <!-- Styles -->
+  <link rel="stylesheet" href="css/_variables.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/game-base.css">
+  <link rel="stylesheet" href="css/game-5.css">
+  
+  <!-- Polices -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Style pour l'indicateur de page -->
+  <style>
+    .page-indicator {
+      position: fixed;
+      bottom: 80px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(13, 77, 150, 0.1);
+      color: var(--blue);
+      font-family: var(--font-body);
+      font-size: 11px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      z-index: 10;
+      opacity: 0.7;
+    }
+    @media (max-width: 480px) {
+      .page-indicator {
+        bottom: 70px;
+        font-size: 10px;
+        padding: 3px 8px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Message hors ligne -->
+  <div id="offline-message" style="display: none; position: fixed; top: 0; left: 0; right: 0; background: #E83C6E; color: white; padding: 10px; text-align: center; z-index: 1000;">
+    ⚠️ <span id="offlineText">Mode hors ligne activé</span>
+  </div>
+
+  <!-- Indication discrète de la page actuelle -->
+  <div class="page-indicator" id="pageIndicator">Page: Jeu 5</div>
+
+  <div class="container">
+    <div class="game-container">
+      <header class="game-header">
+        <a href="hub.html" class="back-btn" id="backBtn">← HUB</a>
+        <h1 class="game-title" id="gameTitle">Jeu 5 - QCM</h1>
+        <button class="info-btn" id="infoBtn">ⓘ</button>
+      </header>
+
+      <main>
+        <section class="question-section">
+          <p class="question-text" id="gameQuestion">
+            Quel est le designer de ce meuble ?
+          </p>
+        </section>
+
+        <div class="cards-grid" id="cards-grid">
+          <!-- Les cartes seront générées dynamiquement en JS -->
+        </div>
+
+        <button id="validate-btn" class="validate-btn" disabled>Valider</button>
+        <p id="feedback" class="feedback"></p>
+      </main>
+
+      <footer class="game-footer">
+        <!-- Vide pour ce jeu -->
+      </footer>
+    </div>
+  </div>
+
+  <!-- Écran de victoire -->
+  <div id="win-screen">
+    <div class="win-icon">🎉</div>
+    <h2 class="win-title" id="winTitle">Félicitations !</h2>
+    <p class="win-sub" id="winSub">Bonne réponse !</p>
+    <a href="hub.html?win=5" id="btn-hub">Retour au HUB</a>
+  </div>
+
+  <!-- Modal Info -->
+  <div id="info-modal">
+    <div class="modal-box">
+      <button class="modal-close" id="infoModalClose" aria-label="Fermer">✕</button>
+      <div class="modal-emoji">💡</div>
+      <h2 class="modal-title" id="infoModalTitle">Jeu 5 - QCM</h2>
+      <p class="modal-text" id="infoModalInstructions">
+        Sélectionnez la bonne réponse parmi les 4 propositions pour valider ce jeu.
+      </p>
+      <button class="modal-cta" id="infoModalCta">OK</button>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/state.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/translations.js"></script>
+  <script src="js/i18n-utils.js"></script>
+  
+  <script>
+    // ==========================================
+    // CONFIGURATION
+    // ==========================================
+    const CORRECT_ANSWER_INDEX = 1; // Index de la bonne réponse (0, 1, 2 ou 3)
+
+    // Données des cartes (images + titres)
+    const CARDS_DATA = [
+      {
+        image: 'image/qcm/qcm-1.svg',
+        title: 'Designer 1',
+        fr: { title: 'Designer 1' },
+        en: { title: 'Designer 1' },
+        es: { title: 'Diseñador 1' }
+      },
+      {
+        image: 'image/qcm/qcm-2.svg',
+        title: 'Designer 2',
+        fr: { title: 'Designer 2' },
+        en: { title: 'Designer 2' },
+        es: { title: 'Diseñador 2' }
+      },
+      {
+        image: 'image/qcm/qcm-3.svg',
+        title: 'Designer 3',
+        fr: { title: 'Designer 3' },
+        en: { title: 'Designer 3' },
+        es: { title: 'Diseñador 3' }
+      },
+      {
+        image: 'image/qcm/qcm-4.svg',
+        title: 'Designer 4',
+        fr: { title: 'Designer 4' },
+        en: { title: 'Designer 4' },
+        es: { title: 'Diseñador 4' }
+      }
+    ];
+
+    let selectedCardIndex = null;
+    let gameWon = false;
+
+    // ==========================================
+    // INITIALISATION
+    // ==========================================
+    async function updatePageTranslations() {
+      await initializeLanguage();
+      
+      // Mettre à jour les textes
+      document.getElementById('backBtn').textContent = translate('buttons.backToHub');
+      document.getElementById('gameTitle').textContent = translate('games.game5.title');
+      document.getElementById('gameQuestion').textContent = translate('games.game5.question');
+      document.getElementById('validate-btn').textContent = translate('buttons.validate');
+      document.getElementById('winTitle').textContent = translate('modals.success.title');
+      document.getElementById('winSub').textContent = translate('games.game5.correct');
+      document.getElementById('btn-hub').textContent = translate('buttons.backToHub');
+      document.getElementById('infoModalTitle').textContent = translate('games.game5.title');
+      document.getElementById('infoModalInstructions').textContent = translate('games.game5.instructions');
+      document.getElementById('infoModalCta').textContent = translate('modals.welcome.cta');
+      document.getElementById('offlineText').textContent = translate('misc.offline');
+      document.getElementById('pageIndicator').textContent = `Page: ${translate('games.game5.title').split(' - ')[0] || 'Jeu 5'}`;
+
+      // Mettre à jour les titres des cartes
+      renderCards();
+    }
+
+    // Écouter les changements de langue
+    window.addEventListener('languageChanged', updatePageTranslations);
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      await updatePageTranslations();
+
+      // Enregistrer le Service Worker
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/js/service-worker.js');
+      }
+
+      // Détection du mode hors ligne
+      function checkOnlineStatus() {
+        const isOnline = navigator.onLine;
+        const offlineMessage = document.getElementById('offline-message');
+        if (!isOnline && offlineMessage) {
+          offlineMessage.style.display = 'block';
+        } else if (offlineMessage) {
+          offlineMessage.style.display = 'none';
+        }
+      }
+      window.addEventListener('online', checkOnlineStatus);
+      window.addEventListener('offline', checkOnlineStatus);
+      checkOnlineStatus();
+
+      // Vérifier si le jeu est déjà terminé
+      const state = loadJdpmState();
+      if (state.game_5_done) {
+        gameWon = true;
+        showWinScreen();
+      }
+    });
+
+    // ==========================================
+    // RENDU DES CARTES
+    // ==========================================
+    function renderCards() {
+      const cardsGrid = document.getElementById('cards-grid');
+      cardsGrid.innerHTML = '';
+
+      CARDS_DATA.forEach((card, index) => {
+        const cardElement = document.createElement('div');
+        cardElement.className = 'qcm-card' + (selectedCardIndex === index ? ' selected' : '');
+        cardElement.dataset.index = index;
+
+        // Utiliser le titre traduit
+        const lang = getCurrentLanguage();
+        const title = card[lang]?.title || card.title;
+
+        cardElement.innerHTML = `
+          <img src="${card.image}" alt="${title}" class="qcm-card-image">
+          <p class="qcm-card-title">${title}</p>
+        `;
+
+        cardElement.addEventListener('click', () => {
+          selectCard(index);
+        });
+
+        cardsGrid.appendChild(cardElement);
+      });
+    }
+
+    // ==========================================
+    // SÉLECTION D'UNE CARTE
+    // ==========================================
+    function selectCard(index) {
+      if (gameWon) return;
+
+      // Désélectionner la carte précédente
+      const previousSelected = document.querySelector('.qcm-card.selected');
+      if (previousSelected) {
+        previousSelected.classList.remove('selected', 'error');
+      }
+      
+      // Sélectionner la nouvelle carte
+      const card = document.querySelector(`.qcm-card[data-index="${index}"]`);
+      if (card) {
+        card.classList.add('selected');
+      }
+      selectedCardIndex = index;
+
+      // Activer le bouton Valider
+      document.getElementById('validate-btn').disabled = false;
+    }
+
+    // ==========================================
+    // VALIDATION
+    // ==========================================
+    const validateBtn = document.getElementById('validate-btn');
+    const feedback = document.getElementById('feedback');
+
+    function validateAnswer() {
+      if (selectedCardIndex === null) {
+        showFeedback(translate('modals.error.text'), true);
+        return;
+      }
+
+      if (selectedCardIndex === CORRECT_ANSWER_INDEX) {
+        onSuccess();
+      } else {
+        // Mettre en évidence la carte incorrecte
+        const card = document.querySelector(`.qcm-card[data-index="${selectedCardIndex}"]`);
+        if (card) {
+          card.classList.add('error');
+        }
+
+        showFeedback(translate('games.game5.incorrect'), true);
+
+        // Réinitialiser après 1 seconde
+        setTimeout(() => {
+          if (card) {
+            card.classList.remove('error');
+          }
+        }, 1000);
+      }
+    }
+
+    function showFeedback(msg, isError) {
+      feedback.textContent = msg;
+      feedback.className = 'feedback show ' + (isError ? 'error' : 'success');
+
+      // Réinitialiser le feedback après 3 secondes
+      setTimeout(() => {
+        feedback.className = 'feedback';
+      }, 3000);
+    }
+
+    // ==========================================
+    // VICTOIRE
+    // ==========================================
+    function onSuccess() {
+      if (gameWon) return;
+      gameWon = true;
+      markJdpmGameDone(5);
+      showWinScreen();
+    }
+
+    function showWinScreen() {
+      document.getElementById('win-screen').classList.add('show');
+    }
+
+    // ==========================================
+    // ÉVÉNEMENTS
+    // ==========================================
+    validateBtn.addEventListener('click', validateAnswer);
+
+    // ==========================================
+    // MODAL INFO
+    // ==========================================
+    const infoModal = document.getElementById('info-modal');
+    function openInfoModal() { infoModal.classList.add('open'); }
+    function closeInfoModal() { infoModal.classList.remove('open'); }
+
+    document.getElementById('infoBtn').addEventListener('click', openInfoModal);
+    document.getElementById('infoModalClose').addEventListener('click', closeInfoClose);
+    function closeInfoClose() { closeInfoModal(); }
+    document.getElementById('infoModalCta').addEventListener('click', closeInfoModal);
+    infoModal.addEventListener('click', e => { if (e.target === infoModal) closeInfoModal(); });
+  </script>
+</body>
+</html>

@@ -1,355 +1,164 @@
-/* ═══════════════════════════════════════════════════════════════
-   BASE.CSS — Masque de Fayçal
-   Styles partagés par toutes les pages du jeu.
-   Importer en premier : <link rel="stylesheet" href="base.css">
-═══════════════════════════════════════════════════════════════ */
+/* ============================================
+   BASE CSS
+   Reset + Styles globaux
+   ============================================ */
 
-/* ── RESET ──────────────────────────────────────────────────── */
+/* Import des variables */
+@import url('_variables.css');
+
+/* Reset CSS */
 *, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 
-/* ── VARIABLES GLOBALES ─────────────────────────────────────── */
-:root {
-  /* Palette principale */
-  --noir:      #0a0804;
-  --or:        #c9a84c;
-  --or-pale:   #e8d49a;
-  --creme:     #f5f0e8;
-
-  /* Couleurs des 3 couches (mini-jeux) */
-  --rouge:     #8b1a1a;
-  --rouge-vif: #c0392b;
-  --bleu:      #1a3a5c;
-  --bleu-vif:  #2980b9;
-  --bleu-ciel: #7fb3d3;
-  --vert:      #1a4a2e;
-  --vert-vif:  #27ae60;
-
-  /* Misc */
-  --erreur:    #c0392b;
-  --succes:    #27ae60;
-  --mur:       #3d1a0a;
-}
-
-/* ── SOCLE HTML/BODY ────────────────────────────────────────── */
-html, body {
-  width: 100%;
-  height: 100dvh;
-  overflow: hidden;
-  background: var(--noir);
-  font-family: 'Crimson Pro', serif;
-  color: var(--creme);
-}
-
-/* ── TYPOGRAPHIE UTILITAIRES ────────────────────────────────── */
-/* Utilisé pour labels, titres, boutons partout */
-.cinzel {
-  font-family: 'Cinzel', serif;
-}
-
-/* ── BOUTON RETOUR (partagé hub + mini-jeux) ────────────────── */
-#btn-back {
-  font-family: 'Cinzel', serif;
-  font-size: 10px;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  color: rgba(201, 168, 76, 0.7);
-  text-decoration: none;
-  border: 1px solid rgba(201, 168, 76, 0.25);
-  padding: 7px 12px;
-  border-radius: 2px;
-  background: rgba(10, 8, 4, 0.6);
-  backdrop-filter: blur(6px);
-  -webkit-tap-highlight-color: transparent;
-  transition: color 0.2s, border-color 0.2s;
-}
-
-#btn-back:active {
-  color: var(--or);
-  border-color: var(--or);
-}
-
-/* ── BOUTON HUB / CTA DORÉ (partagé écrans de victoire) ──────── */
-#btn-hub,
-.btn-hub {
-  display: block;
-  padding: 15px 40px;
-  background: var(--or);
-  border: none;
-  border-radius: 2px;
-  color: var(--noir);
-  font-family: 'Cinzel', serif;
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.25em;
-  text-transform: uppercase;
-  cursor: pointer;
-  text-decoration: none;
-  text-align: center;
-  margin-top: 6px;
-  -webkit-tap-highlight-color: transparent;
-}
-
-/* ── ORNEMENTS DÉCORATIFS ───────────────────────────────────── */
-/* Usage : <div class="orn"><div class="orn-line"></div><div class="orn-diamond"></div><div class="orn-line r"></div></div> */
-.orn {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.orn-line {
-  width: 44px;
-  height: 1px;
-  background: linear-gradient(to right, transparent, var(--or));
-}
-
-.orn-line.r {
-  background: linear-gradient(to left, transparent, var(--or));
-}
-
-.orn-diamond {
-  width: 6px;
-  height: 6px;
-  background: var(--or);
-  transform: rotate(45deg);
-}
-
-/* ── ÉCRAN DE VICTOIRE — BASE ───────────────────────────────── */
-/* Chaque page étend ce bloc avec sa couleur d'accent */
-.win-screen {
-  position: fixed;
-  inset: 0;
-  z-index: 50;
-  background: rgba(10, 8, 4, 0.95);
-  backdrop-filter: blur(14px);
-  display: none;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 18px;
-  padding: 40px 32px;
-}
-
-.win-screen.show {
-  display: flex;
-}
-
-.win-icon {
-  font-size: 58px;
-  animation: pop 0.55s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.2s both;
-}
-
-.win-title {
-  font-family: 'Cinzel', serif;
-  font-size: 22px;
-  font-weight: 400;
-  color: var(--or-pale);
-  letter-spacing: 0.12em;
-  text-align: center;
-  animation: fadeUp 0.5s ease 0.35s both;
-}
-
-.win-sub {
-  font-size: 15px;
-  font-style: italic;
-  font-weight: 300;
-  color: rgba(245, 240, 232, 0.6);
-  text-align: center;
-  line-height: 1.8;
-  animation: fadeUp 0.5s ease 0.55s both;
-}
-
-/* ── PARTICULES (toutes les victoires) ──────────────────────── */
-.particles {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  overflow: hidden;
-}
-
-.particle {
-  position: absolute;
-  animation: pfall linear forwards;
-}
-
-/* ── LOADER SPINNER (hub + reveal + jeux AR) ────────────────── */
-.loader-ring {
-  width: 54px;
-  height: 54px;
-  border-radius: 50%;
-  border: 2px solid var(--or);
-  border-top-color: transparent;
-  animation: spin 1.1s linear infinite;
-}
-
-.loader-text {
-  font-family: 'Cinzel', serif;
-  font-size: 11px;
-  letter-spacing: 0.25em;
-  text-transform: uppercase;
-  color: rgba(201, 168, 76, 0.7);
-}
-
-/* ── VIGNETTE DÉCORATIVE (pages caméra) ─────────────────────── */
-.vignette {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  background: radial-gradient(ellipse at center, transparent 35%, rgba(10, 8, 4, 0.72) 100%);
-}
-
-/* ── HEADER PILL (étiquette contextuelle) ───────────────────── */
-/* Déclinée en couleur par chaque page via .header-pill--rouge, etc. */
-.header-pill {
-  font-family: 'Cinzel', serif;
-  font-size: 9px;
-  letter-spacing: 0.25em;
-  text-transform: uppercase;
-  background: rgba(10, 8, 4, 0.6);
-  backdrop-filter: blur(6px);
-  padding: 6px 12px;
-  border-radius: 2px;
-}
-
-/* ── INPUT MOT (jeux bleu + vert) ───────────────────────────── */
-.word-input-base {
-  flex: 1;
-  padding: 14px;
-  background: rgba(10, 8, 4, 0.82);
-  border: 1px solid rgba(201, 168, 76, 0.3);
-  border-radius: 2px;
-  color: var(--creme);
-  font-family: 'Cinzel', serif;
+html {
   font-size: 16px;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  outline: none;
-  -webkit-appearance: none;
-  transition: border-color 0.2s;
+  -webkit-text-size-adjust: 100%; /* Empêche le redimensionnement sur iOS */
+  -webkit-tap-highlight-color: transparent; /* Supprime le surlignage au clic */
 }
 
-.word-input-base::placeholder {
-  color: rgba(245, 240, 232, 0.2);
-  font-size: 11px;
-  letter-spacing: 0.12em;
+body {
+  min-height: 100vh;
+  min-height: 100dvh; /* Pour les mobiles avec barre de navigation */
+  font-family: var(--font-body);
+  color: var(--blue);
+  background: var(--cream);
+  /* Texture papier grain (optionnel) */
+  background-image:
+    radial-gradient(rgba(13, 77, 150, 0.05) 1px, transparent 1px),
+    radial-gradient(rgba(13, 77, 150, 0.04) 1px, transparent 1px);
+  background-size: 24px 24px, 17px 17px;
+  background-position: 0 0, 8px 8px;
+  line-height: 1.5;
+  overflow-x: hidden; /* Empêche le scroll horizontal */
 }
 
-.word-input-base.error {
-  animation: shake 0.35s ease;
+/* Typographie */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  font-weight: 800;
+  color: var(--blue);
+  line-height: 1.2;
 }
 
-/* ── FEEDBACK TEXTE (jeux bleu + vert + rouge) ──────────────── */
-.feedback {
-  font-family: 'Cinzel', serif;
-  font-size: 10px;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  text-align: center;
-  min-height: 16px;
-  opacity: 0;
-  transition: opacity 0.2s;
+h1 { font-size: clamp(26px, 7vw, 34px); }
+h2 { font-size: clamp(22px, 6vw, 28px); }
+h3 { font-size: clamp(18px, 5vw, 24px); }
+
+p {
+  font-size: 14px;
+  line-height: 1.6;
+  color: rgba(13, 77, 150, 0.85);
 }
 
-.feedback.show     { opacity: 1; }
-.feedback.is-error { color: var(--erreur); }
-
-/* ── TOAST CENTRAL ──────────────────────────────────────────── */
-/* Pop-up de confirmation au centre de l'écran */
-.toast-center {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%) scale(0);
-  z-index: 20;
-  background: rgba(10, 8, 4, 0.9);
-  border-radius: 6px;
-  padding: 18px 28px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-  pointer-events: none;
-  transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275),
-              opacity 0.25s ease;
-  opacity: 0;
+a {
+  color: var(--teal);
+  text-decoration: none;
+  cursor: pointer;
 }
 
-.toast-center.show {
-  transform: translate(-50%, -50%) scale(1);
-  opacity: 1;
+a:hover {
+  text-decoration: underline;
 }
 
-/* ── CONTENEUR AR (face tracking + image tracking) ──────────── */
-.ar-container {
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  width: 100dvw;
-  height: 100dvh;
+/* Boutons */
+button {
+  font-family: var(--font-display);
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  border-radius: var(--border-radius-md);
+  transition: all var(--transition-fast);
 }
 
-.ar-container canvas,
-.ar-container video {
-  position: absolute !important;
-  top: 0 !important;
-  left: 0 !important;
-  width: 100% !important;
-  height: 100% !important;
-  object-fit: cover;
+button:active {
+  transform: scale(0.98);
 }
 
-.ar-container > div {
-  position: absolute !important;
-  top: 0 !important;
-  left: 0 !important;
-  width: 100% !important;
-  height: 100% !important;
+button:focus {
+  outline: 2px solid var(--orange);
+  outline-offset: 2px;
+}
+
+/* Images */
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Conteneurs */
+.container {
+  max-width: 460px;
+  width: 100%;
+  margin: 0 auto;
+  padding: var(--spacing-md);
+}
+
+/* Utilitaires */
+.text-center { text-align: center; }
+.text-left { text-align: left; }
+.text-right { text-align: right; }
+
+.mt-xs { margin-top: var(--spacing-xs); }
+.mt-sm { margin-top: var(--spacing-sm); }
+.mt-md { margin-top: var(--spacing-md); }
+.mt-lg { margin-top: var(--spacing-lg); }
+.mt-xl { margin-top: var(--spacing-xl); }
+
+.mb-xs { margin-bottom: var(--spacing-xs); }
+.mb-sm { margin-bottom: var(--spacing-sm); }
+.mb-md { margin-bottom: var(--spacing-md); }
+.mb-lg { margin-bottom: var(--spacing-lg); }
+.mb-xl { margin-bottom: var(--spacing-xl); }
+
+/* Accessibilité */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
   overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
-/* ── UI LAYER (par-dessus AR) ───────────────────────────────── */
-.ui-layer {
-  position: fixed;
-  inset: 0;
-  z-index: 10;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  pointer-events: none;
+/* Pour les mobiles */
+@media (hover: none) {
+  /* Styles spécifiques pour les appareils tactiles */
+  button:focus:not(:focus-visible) {
+    outline: none;
+  }
 }
 
-/* ── ANIMATIONS ─────────────────────────────────────────────── */
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(12px); }
-  to   { opacity: 1; transform: translateY(0); }
+/* Animation pour les modales */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
-@keyframes pop {
-  from { transform: scale(0) rotate(-15deg); opacity: 0; }
-  to   { transform: scale(1) rotate(0deg);   opacity: 1; }
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-
-@keyframes shake {
-  0%, 100% { transform: translateX(0); }
-  20%       { transform: translateX(-6px); }
-  40%       { transform: translateX(6px); }
-  60%       { transform: translateX(-4px); }
-  80%       { transform: translateX(4px); }
-}
-
-@keyframes pfall {
-  0%   { transform: translateY(-10px) rotate(0deg);   opacity: 1; }
-  100% { transform: translateY(110vh) rotate(540deg); opacity: 0; }
-}
-
-@keyframes fadeOut {
-  to { opacity: 0; }
+/* Suppression des animations pour les utilisateurs qui préfèrent moins de mouvement */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

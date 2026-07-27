@@ -1,0 +1,102 @@
+{
+  "language": "es",
+  "name": "Español",
+  "flag": "🇪🇸",
+  "direction": "ltr",
+  "translations": {
+    "hub": {
+      "title": "Jornadas de Patrimonio y Matrimonio",
+      "subtitle": "Búsqueda del tesoro en el MAD",
+      "startBtn": "Comenzar la aventura",
+      "progress": "Progreso",
+      "of": "de",
+      "enigmasSolved": "enigmas resueltos",
+      "prize": "¡Gana un libro sobre diseño!",
+      "resetBtn": "Reiniciar el juego"
+    },
+    "buttons": {
+      "backToHub": "Volver al HUB",
+      "info": "Info",
+      "validate": "Validar",
+      "cancel": "Cancelar",
+      "hint": "Pista",
+      "next": "Siguiente",
+      "retry": "Reintentar"
+    },
+    "modals": {
+      "welcome": {
+        "title": "¡Bienvenido, explorador!",
+        "text": "5 enigmas te esperan en el camino. Resuélvelos uno por uno para llenar la barra en la parte inferior de la pantalla y desbloquear el tesoro final. Toca una tarjeta para comenzar un enigma.",
+        "cta": "¡Vamos!"
+      },
+      "success": {
+        "title": "¡Felicidades!",
+        "text": "¡Resolviste este enigma!",
+        "cta": "Volver al HUB"
+      },
+      "error": {
+        "title": "Error",
+        "text": "Esa no es la respuesta correcta. ¡Intenta de nuevo!",
+        "cta": "OK"
+      }
+    },
+    "games": {
+      "game1": {
+        "title": "Juego 1 - Realidad Aumentada",
+        "subtitle": "Escanear el objetivo",
+        "instructions": "Apunta la cámara hacia el objetivo impreso para revelar la pista.",
+        "targetFound": "¡Objetivo detectado!",
+        "targetLost": "Objetivo perdido",
+        "correct": "¡Bien hecho! Has resuelto el enigma.",
+        "placeholder": "Ingresa la respuesta…"
+      },
+      "game2": {
+        "title": "Juego 2 - NFC/Código QR",
+        "subtitle": "Escanea el código para continuar",
+        "instructions": "Acercar el dispositivo a la etiqueta NFC o escanear el código QR.",
+        "qrModalTitle": "Escanear un código QR",
+        "qrModalInstructions": "Apunta la cámara hacia el código QR.",
+        "qrSuccess": "¡Código QR válido!",
+        "qrError": "Código QR inválido. Prueba otro código."
+      },
+      "game3": {
+        "title": "Juego 3 - Búsqueda de imagen",
+        "subtitle": "Encuentra el detalle oculto",
+        "question": "¿Cuál es el nombre de este mueble?",
+        "placeholder": "Ingresa el nombre del mueble",
+        "correct": "¡Bien hecho! Esa es la respuesta correcta.",
+        "incorrect": "Ese no es el nombre correcto. Intenta de nuevo."
+      },
+      "game4": {
+        "title": "Juego 4 - Enigma",
+        "subtitle": "Resuelve el enigma",
+        "question": "Soy un mueble del siglo XVIII, ¿quién soy?",
+        "placeholder": "Ingresa tu respuesta",
+        "hint": "Soy de madera y tengo cajones.",
+        "correct": "¡Exacto! Lo encontraste.",
+        "incorrect": "Esa no es la respuesta correcta."
+      },
+      "game5": {
+        "title": "Juego 5 - Quiz",
+        "subtitle": "Elige la respuesta correcta",
+        "question": "¿Quién es el diseñador de este mueble?",
+        "correct": "¡Respuesta correcta!",
+        "incorrect": "Respuesta incorrecta. Intenta de nuevo."
+      }
+    },
+    "success": {
+      "title": "¡Bien Hecho!",
+      "subtitle": "¡Resolviste los 5 enigmas!",
+      "message": "¡Felicidades! Has completado todos los enigmas de la búsqueda del tesoro.",
+      "badge": "Insignia del Campeón",
+      "formMessage": "Serás redirigido a un formulario para participar en el sorteo y ganar un libro sobre diseño.",
+      "formBtn": "Completar el formulario",
+      "backToHub": "Volver al HUB"
+    },
+    "misc": {
+      "offline": "Modo sin conexión activado",
+      "loading": "Cargando...",
+      "childHelp": "Los niños pueden ser ayudados por un adulto."
+    }
+  }
+}

@@ -1,0 +1,47 @@
+/* ============================================
+   VARIABLES CSS GLOBALES
+   JDPM - Journées du Patrimoine et Matrimoine
+   ============================================ */
+
+:root {
+  /* Couleurs */
+  --white: #FFFFFF;
+  --pink: #F6BACC;
+  --teal: #239DAB;
+  --cyan: #37B7C0;
+  --blue: #0D4D96;
+  --orange: #F49B2E;
+  --yellow: #FDD211;
+  --cream: #EFDAD2;
+  --magenta: #E83C6E;
+  --black: #000000;
+  --gray: #666666;
+  --light-gray: #f0f0f0;
+  
+  /* Polices */
+  --font-display: 'Baloo 2', sans-serif;
+  --font-body: 'Nunito', sans-serif;
+  
+  /* Espacements */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  
+  /* Bordures */
+  --border-radius-sm: 4px;
+  --border-radius-md: 8px;
+  --border-radius-lg: 16px;
+  --border-radius-xl: 24px;
+  
+  /* Ombres */
+  --box-shadow-sm: 0 2px 4px rgba(13, 77, 150, 0.1);
+  --box-shadow-md: 0 4px 8px rgba(13, 77, 150, 0.15);
+  --box-shadow-lg: 0 10px 25px rgba(13, 77, 150, 0.2);
+  
+  /* Transitions */
+  --transition-fast: 0.2s ease;
+  --transition-normal: 0.3s ease;
+  --transition-slow: 0.5s ease;
+}

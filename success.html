@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Félicitations ! - JDPM</title>
+  
+  <!-- Manifest PWA -->
+  <link rel="manifest" href="/manifest.json">
+  
+  <!-- Préchargement des assets critiques -->
+  <link rel="preload" href="css/_variables.css" as="style">
+  <link rel="preload" href="css/base.css" as="style">
+  <link rel="preload" href="css/success.css" as="style">
+  <link rel="preload" href="js/state.js" as="script">
+  <link rel="preload" href="js/utils.js" as="script">
+  <link rel="preload" href="js/translations.js" as="script">
+  
+  <!-- Styles -->
+  <link rel="stylesheet" href="css/_variables.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/success.css">
+  
+  <!-- Polices -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Style pour l'indicateur de page -->
+  <style>
+    .page-indicator {
+      position: fixed;
+      bottom: 80px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(13, 77, 150, 0.1);
+      color: var(--blue);
+      font-family: var(--font-body);
+      font-size: 11px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      z-index: 10;
+      opacity: 0.7;
+    }
+    @media (max-width: 480px) {
+      .page-indicator {
+        bottom: 70px;
+        font-size: 10px;
+        padding: 3px 8px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Message hors ligne -->
+  <div id="offline-message" style="display: none; position: fixed; top: 0; left: 0; right: 0; background: #E83C6E; color: white; padding: 10px; text-align: center; z-index: 1000;">
+    ⚠️ <span id="offlineText">Mode hors ligne activé</span>
+  </div>
+
+  <!-- Indication discrète de la page actuelle -->
+  <div class="page-indicator" id="pageIndicator">Page: Succès</div>
+
+  <div class="container">
+    <div class="success-container">
+      <h1 class="success-title" id="successTitle">Félicitations !</h1>
+      <p class="success-message" id="successMessage">Page de réussite en construction...</p>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/state.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/translations.js"></script>
+  <script src="js/i18n-utils.js"></script>
+  
+  <!-- Scripts spécifiques à la page -->
+  <script>
+    // Mettre à jour les traductions de la page
+    async function updatePageTranslations() {
+      await initializeLanguage();
+      
+      // Mettre à jour les textes
+      document.getElementById('successTitle').textContent = translate('success.title');
+      document.getElementById('successMessage').textContent = translate('success.message');
+      document.getElementById('offlineText').textContent = translate('misc.offline');
+      document.getElementById('pageIndicator').textContent = `Page: ${translate('success.title')}`;
+    }
+
+    // Écouter les changements de langue
+    window.addEventListener('languageChanged', updatePageTranslations);
+    
+    // Initialiser au chargement
+    document.addEventListener('DOMContentLoaded', updatePageTranslations);
+  </script>
+  
+  <!-- Enregistrement du Service Worker et détection hors ligne -->
+  <script>
+    // Enregistrement du Service Worker
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/js/service-worker.js')
+          .then((registration) => {
+            console.log('✅ Service Worker enregistré avec succès:', registration.scope);
+          })
+          .catch((error) => {
+            console.error('❌ Erreur lors de l\'enregistrement du Service Worker:', error);
+          });
+      });
+    }
+
+    // Détection du mode hors ligne
+    function checkOnlineStatus() {
+      const isOnline = navigator.onLine;
+      const offlineMessage = document.getElementById('offline-message');
+      
+      if (!isOnline && offlineMessage) {
+        offlineMessage.style.display = 'block';
+      } else if (offlineMessage) {
+        offlineMessage.style.display = 'none';
+      }
+    }
+    
+    // Écouter les changements de statut
+    window.addEventListener('online', checkOnlineStatus);
+    window.addEventListener('offline', checkOnlineStatus);
+    
+    // Vérifier au chargement
+    document.addEventListener('DOMContentLoaded', checkOnlineStatus);
+  </script>
+</body>
+</html>
